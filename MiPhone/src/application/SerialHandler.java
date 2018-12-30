@@ -75,6 +75,7 @@ public class SerialHandler {
 	}
 	
 	public synchronized void setListener( SerialListener l ) {
+		System.out.println("SerialHandler listener set");
 		listener = l;
     }
     

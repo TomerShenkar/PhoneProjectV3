@@ -11,9 +11,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 public class PhoneController implements Initializable{
 
@@ -21,11 +23,14 @@ public class PhoneController implements Initializable{
 	@FXML TextArea txtLogger;
 	@FXML Button btnOpen;
 	@FXML Label lblStatus,lblIncoming;
+	@FXML TextField txtNumber;
+	@FXML CheckBox chkSMS;
 	private enum ePhoneStatus {IDLE,RINGING,ANSWERED,DIALLED,SMSIN};
 	private ePhoneStatus phoneStatus;
 	SerialHandler sh;
 	GetLine gl;
-	protected static Queue<String> inQueue;
+//	protected static Queue<String> inQueue;
+	protected static String addition = "";
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -56,8 +61,10 @@ public class PhoneController implements Initializable{
 
 						// The type we pass to publish() is determined
 						// by the second template parameter.
-						if (!inQueue.isEmpty()) {
-							String sq = inQueue.remove();
+						if (!addition.equals("")) {
+							//String sq = inQueue.remove();
+							String sq = addition;
+							addition = "";
 							publish(sq);
 							gl.addRaw(sq.getBytes());
 							String s = gl.getNext();
@@ -67,6 +74,7 @@ public class PhoneController implements Initializable{
 								if (s.startsWith("RING"))
 								{
 									phoneStatus = ePhoneStatus.RINGING;
+									setStatus(ePhoneStatus.RINGING);
 									System.out.println("Ringing");
 								}
 								if (s.startsWith("NO CARRIER"))
@@ -122,15 +130,42 @@ public class PhoneController implements Initializable{
 	
 	public void pressGreen(ActionEvent ev)
 	{
-		sh.portWrite("ATA\r");
-		phoneStatus = ePhoneStatus.ANSWERED;
+		if (phoneStatus == ePhoneStatus.IDLE)
+		{
+			if (chkSMS.isSelected())
+			{
+				// send SMS
+			}
+			else
+			{
+				// dial number
+				sh.portWrite("ATD"+txtNumber.getText()+";\r");
+				setStatus(ePhoneStatus.DIALLED);
+			}
+		}
+		else
+		{
+			sh.portWrite("ATA\r");
+			setStatus( ePhoneStatus.ANSWERED);
+		}
 		
 	}
 	
 	public void pressRed(ActionEvent ev)
 	{
 		sh.portWrite("ATH\r");
-		phoneStatus = ePhoneStatus.IDLE;
+		setStatus( ePhoneStatus.IDLE);
 	}
-
+	
+	public void addDigit(ActionEvent ev)
+	{
+		String k = txtNumber.getText() + ((Button)ev.getSource()).getText();
+		txtNumber.setText(k);
+	}
+	
+	public void delDigit(ActionEvent ev) {
+		String k = txtNumber.getText();
+		if (k.length() > 0)
+			txtNumber.setText(k.substring(0, k.length()-1));		
+	}
 }
