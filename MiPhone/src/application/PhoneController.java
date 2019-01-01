@@ -3,12 +3,13 @@ package application;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
-import java.util.Queue;
 import java.util.ResourceBundle;
 
 import javax.swing.SwingWorker;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,6 +23,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 /*
  * SIM900 initialization
@@ -41,6 +43,10 @@ public class PhoneController implements Initializable{
 	@FXML TextField txtNumber;
 	@FXML TextField txtText;
 	@FXML CheckBox chkSMS;
+	@FXML MediaView mv;
+	@FXML Button btnGreen;
+	@FXML Button btnRed;
+
 	private enum ePhoneStatus {IDLE,RINGING,ANSWERED,DIALLED,SMSIN,SMSOUT};
 	private ePhoneStatus phoneStatus;
 	SerialHandler sh;
@@ -49,14 +55,17 @@ public class PhoneController implements Initializable{
 	protected static String addition = "";
 	private String incoming = "";
 	private String smsText = "";
-	private MediaPlayer mpSingle;
-	private Media mRing;
+	private MediaPlayer mpAudioSingle,mpVideo;
+	private Media mRing,mVideo;
 	boolean callPlaying = false;
 	boolean loopPlay = true;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
+		btnGreen.setDisable(true);
+		btnRed.setDisable(true);
+		
 		sh = new SerialHandler();
 		String [] pnames = sh.getSystemComPortNames();
 		for (String s: pnames)
@@ -69,20 +78,41 @@ public class PhoneController implements Initializable{
 		// set up the media player for incoming calls
 		String a_name = new File("src/media/0743.mp3").getAbsolutePath();
 		mRing = new Media(new File(a_name).toURI().toString());
-		mpSingle = new MediaPlayer(mRing);
-		mpSingle.setAutoPlay(false);
+		mpAudioSingle = new MediaPlayer(mRing);
+		mpAudioSingle.setAutoPlay(false);
 		// next bit for loop play
 		if (loopPlay)
 		{
-			mpSingle.setOnEndOfMedia(new Runnable () {
+			mpAudioSingle.setOnEndOfMedia(new Runnable () {
 				@Override
 				public void run() {
 					System.out.println("End of audio");
 					// rewind & play again
-					mpSingle.seek(Duration.ZERO);
+					mpAudioSingle.seek(Duration.ZERO);
 				}			
 			});		
 		}
+		// set up the media player for the Hands clip
+		String v_name = new File("src/media/Hands.mp4").getAbsolutePath();
+		mVideo = new Media(new File(v_name).toURI().toString());
+		mpVideo = new MediaPlayer(mVideo);
+		mv.setMediaPlayer(mpVideo);
+		// make video fix the media view
+		DoubleProperty width = mv.fitWidthProperty();
+		DoubleProperty height = mv.fitHeightProperty();
+		try {
+		width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
+		} catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+		try  {
+		height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
+		} catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}		mpVideo.play();
+		
 		txtNumber.setText("0545919886");
 		txtText.setText("blah");
 	}
@@ -90,6 +120,8 @@ public class PhoneController implements Initializable{
 	{
 		if (sh.portOpen(cbComPorts.getValue().toString())) {
 			btnOpen.setDisable(true);
+			btnGreen.setDisable(false);
+			btnRed.setDisable(false);
 			SerialListener sl = new CollectSerialData();
 			sh.setListener(sl);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
@@ -361,11 +393,11 @@ public class PhoneController implements Initializable{
 
 	public void stopaudio()
 	{
-		mpSingle.stop();
+		mpAudioSingle.stop();
 	}
 	public void playaudio()
 	{
-		mpSingle.seek(mpSingle.getStartTime());
-		mpSingle.play();
+		mpAudioSingle.seek(mpAudioSingle.getStartTime());
+		mpAudioSingle.play();
 	}
 }
