@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Queue;
@@ -8,6 +9,8 @@ import java.util.ResourceBundle;
 import javax.swing.SwingWorker;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +20,17 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
+/*
+ * SIM900 initialization
+ * ATE0   no echo
+ * AT+COLP=1  notification that remore answered or not
+ *      +COLP: "number",129,"","name"  rejected
+ *             "number:",129,0,"name  accepted
+ *      
+ */
 public class PhoneController implements Initializable{
 
 	@FXML ComboBox<String> cbComPorts;
@@ -36,6 +49,10 @@ public class PhoneController implements Initializable{
 	protected static String addition = "";
 	private String incoming = "";
 	private String smsText = "";
+	private MediaPlayer mpSingle;
+	private Media mRing;
+	boolean callPlaying = false;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
@@ -48,6 +65,20 @@ public class PhoneController implements Initializable{
 		}
 		gl = new GetLine();
 		setStatus(ePhoneStatus.IDLE);
+		// set up the media player for incoming calls
+		String a_name = new File("src/media/0743.mp3").getAbsolutePath();
+		mRing = new Media(new File(a_name).toURI().toString());
+		mpSingle = new MediaPlayer(mRing);
+		mpSingle.setAutoPlay(false);
+		mpSingle.setOnEndOfMedia(new Runnable () {
+			@Override
+			public void run() {
+				System.out.println("End of audio");
+				// rewind & play again
+				mpSingle.seek(Duration.ZERO);
+			}			
+		});
+		
 	}
 	public void openPort(ActionEvent ev)
 	{
@@ -96,6 +127,12 @@ public class PhoneController implements Initializable{
 								System.out.println("Ringing");
 								phoneStatus = ePhoneStatus.RINGING;
 								publish("ps");
+								// kick off ringtone
+								if (!callPlaying)
+								{
+									callPlaying = true;
+									playaudio();
+								}
 							}
 							else if (s.startsWith("NO CARRIER"))
 							{
@@ -103,6 +140,8 @@ public class PhoneController implements Initializable{
 								System.out.println("Stopped");
 								phoneStatus =  ePhoneStatus.IDLE;
 								publish("ps");
+								callPlaying = false;
+								stopaudio();
 							}
 							else if (s.startsWith("+CLIP:"))
 							// +CLIP: "0545919886",129,"",,"Derek",0
@@ -112,6 +151,23 @@ public class PhoneController implements Initializable{
 								System.out.println("Incoming from: " + parts[1]);
 								publish("in");
 							}
+							else if (s.startsWith("+COLP:"))
+						//     +COLP: "number",129,"","name"  rejected
+						//             "number:",129,0,"name  accepted
+								{
+									String [] parts = s.split(",");
+									if (parts.length == 4)
+									{
+										// rejected
+										phoneStatus = ePhoneStatus.IDLE;
+										publish("ps");
+									}
+									else
+									{
+										phoneStatus = ePhoneStatus.ANSWERED;
+										publish("ps");
+									}
+								}
 							else if (s.startsWith("+CMT:"))
 							// +CMT: "number","contact","time"
 							// msg
@@ -209,12 +265,15 @@ public class PhoneController implements Initializable{
 				// dial number
 				sh.portWrite("ATD"+txtNumber.getText()+";\r");
 				setStatus(ePhoneStatus.DIALLED);
+				playDialTones(txtNumber.getText());
 			}
 		}
 		else
 		{
 			sh.portWrite("ATA\r");
 			setStatus( ePhoneStatus.ANSWERED);
+			callPlaying = false;
+			stopaudio();
 		}
 		
 	}
@@ -223,7 +282,9 @@ public class PhoneController implements Initializable{
 	{
 		sh.portWrite("ATH\r");
 		setStatus( ePhoneStatus.IDLE);
-	}
+		callPlaying = false;
+		stopaudio();
+		}
 	
 	public void addDigit(ActionEvent ev)
 	{
@@ -235,5 +296,59 @@ public class PhoneController implements Initializable{
 		String k = txtNumber.getText();
 		if (k.length() > 0)
 			txtNumber.setText(k.substring(0, k.length()-1));		
+	}
+	/**
+	 * @author David Henry
+	 * @return void
+	 * @throws Nothing
+	 * @param mediaList 
+	 */
+	private void playMediaTracks(ObservableList<Media> mediaList) {
+        if (mediaList.size() == 0)
+            return;
+
+        MediaPlayer mediaplayer = new MediaPlayer(mediaList.remove(0));
+        mediaplayer.play();
+
+        mediaplayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                playMediaTracks(mediaList);
+            }
+        });
+    }
+/**
+ * @return void
+ * @author David Henry
+ * @param phone - Number to be dialled
+ */
+	private void playDialTones(String phone)
+	{
+		String prefix = "src/media/dtmf_";
+		String suffix = ".wav";
+		ObservableList<Media> mediaList = FXCollections.observableArrayList();
+		for (int i=0;i<phone.length();i++)
+		{
+			mediaList.add(new Media(new File(new File(prefix + phone.substring(i, i+1) + suffix).getAbsolutePath()).toURI().toString()));
+		}
+        playMediaTracks(mediaList);
+	}
+	
+	private void makePlaylist(String [] files)
+	{
+		ObservableList<Media> mediaList = FXCollections.observableArrayList();
+		for (String s: files)
+			mediaList.add(new Media(new File(new File(s).getAbsolutePath()).toURI().toString()));
+        playMediaTracks(mediaList);
+	}
+
+	public void stopaudio()
+	{
+		mpSingle.stop();
+	}
+	public void playaudio()
+	{
+		mpSingle.seek(mpSingle.getStartTime());
+		mpSingle.play();
 	}
 }
