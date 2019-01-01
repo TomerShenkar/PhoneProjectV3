@@ -32,6 +32,7 @@ import javafx.util.Duration;
  *      +COLP: "number",129,"","name"  rejected
  *             "number:",129,0,"name  accepted
  * AT+CMGF=1  SMS on text mode   
+ * AT+DDET=1  to read DTMF
  */
 public class PhoneController implements Initializable{
 
@@ -223,6 +224,13 @@ public class PhoneController implements Initializable{
 								nextLineSMS = true;
 								phoneStatus = ePhoneStatus.SMSIN;
 								publish("in");
+							}
+							else if (s.startsWith("+DTMF:"))
+								// +DTMF:n  where n is the ket
+								// msg
+							{
+								String [] parts = s.trim().split(":");
+								System.out.println(parts[1] + " pressed");
 							}
 							publish(sPublish);
 						}
