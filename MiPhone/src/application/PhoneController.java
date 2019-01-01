@@ -60,6 +60,7 @@ public class PhoneController implements Initializable{
 	private Media mRing,mVideo;
 	boolean callPlaying = false;
 	boolean loopPlay = true;
+	boolean playHands = false;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -112,7 +113,9 @@ public class PhoneController implements Initializable{
 		} catch (Exception e)
 		{
 			System.out.println(e.toString());
-		}		mpVideo.play();
+		}
+		if (playHands)
+			mpVideo.play();
 		
 		txtNumber.setText("0545919886");
 		txtText.setText("blah");
