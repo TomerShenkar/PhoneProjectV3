@@ -7,8 +7,7 @@ public class CollectSerialData extends PhoneController implements SerialListener
 	public void dataReceived( byte [] raw )
 	 {
 		 String s = new String(raw);
-		System.out.print(s); 	
-	//	inQueue.add(s);
+//		System.out.print(s); 	
 		addition += s;
 	 }	
 }

@@ -1,18 +1,21 @@
 package application;
 
+import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class GetLine {
 	public boolean linemode;
-	Queue<String> q;
+	ArrayDeque<String> q;
 	// Constructor
 	String tempString;	
+	public int members;
 	public GetLine ()
 	{
 		linemode = true;
 		tempString = "";
-		q = new LinkedList<>(); 
+		q = new ArrayDeque<String>(); 
+		members = 0;
 	}
 	public void addRaw(byte [] rawData)
 	{
@@ -21,9 +24,11 @@ public class GetLine {
 			if (linemode)
 			{
 				tempString += (char)rawData[i];
-				if (rawData[i] == 10)
+				if (rawData[i] == 10) // 0x0a LF 0x0D CR
 				{
+					System.out.println("adding " + tempString );
 					q.add(tempString);
+					members++;
 					tempString = "";
 				}				
 			}
@@ -38,6 +43,7 @@ public class GetLine {
 	}
 	public String getNext()
 	{
-		return q.poll();
+		members--;
+		return q.remove();
 	}
 }
