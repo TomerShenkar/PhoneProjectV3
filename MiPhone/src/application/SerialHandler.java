@@ -68,6 +68,11 @@ public class SerialHandler {
 		return rc;
 	}
 	
+	public void portWrite(byte [] b)
+	{
+		ports[portIndex].writeBytes(b, b.length);
+	}
+
 	public void portWrite(String s)
 	{
 		byte [] b = s.getBytes();

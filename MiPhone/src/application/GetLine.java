@@ -37,6 +37,7 @@ public class GetLine {
 				tempString = "";
 				tempString += (char)rawData[i];
 				q.add(tempString);
+				members++;
 				tempString = "";
 			}
 		}

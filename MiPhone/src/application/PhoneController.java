@@ -29,7 +29,7 @@ import javafx.util.Duration;
  * AT+COLP=1  notification that remore answered or not
  *      +COLP: "number",129,"","name"  rejected
  *             "number:",129,0,"name  accepted
- *      
+ * AT+CMGF=1  SMS on text mode   
  */
 public class PhoneController implements Initializable{
 
@@ -41,7 +41,7 @@ public class PhoneController implements Initializable{
 	@FXML TextField txtNumber;
 	@FXML TextField txtText;
 	@FXML CheckBox chkSMS;
-	private enum ePhoneStatus {IDLE,RINGING,ANSWERED,DIALLED,SMSIN};
+	private enum ePhoneStatus {IDLE,RINGING,ANSWERED,DIALLED,SMSIN,SMSOUT};
 	private ePhoneStatus phoneStatus;
 	SerialHandler sh;
 	GetLine gl;
@@ -52,7 +52,8 @@ public class PhoneController implements Initializable{
 	private MediaPlayer mpSingle;
 	private Media mRing;
 	boolean callPlaying = false;
-
+	boolean loopPlay = true;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
@@ -70,15 +71,20 @@ public class PhoneController implements Initializable{
 		mRing = new Media(new File(a_name).toURI().toString());
 		mpSingle = new MediaPlayer(mRing);
 		mpSingle.setAutoPlay(false);
-		mpSingle.setOnEndOfMedia(new Runnable () {
-			@Override
-			public void run() {
-				System.out.println("End of audio");
-				// rewind & play again
-				mpSingle.seek(Duration.ZERO);
-			}			
-		});
-		
+		// next bit for loop play
+		if (loopPlay)
+		{
+			mpSingle.setOnEndOfMedia(new Runnable () {
+				@Override
+				public void run() {
+					System.out.println("End of audio");
+					// rewind & play again
+					mpSingle.seek(Duration.ZERO);
+				}			
+			});		
+		}
+		txtNumber.setText("0545919886");
+		txtText.setText("blah");
 	}
 	public void openPort(ActionEvent ev)
 	{
@@ -111,7 +117,7 @@ public class PhoneController implements Initializable{
 
 						if (s != null)
 						{
-							System.out.println(s); 
+					//		System.out.println(s); 
 							String sPublish = "";
 							// parse the data and act accordingly
 							if (nextLineSMS)
@@ -121,6 +127,13 @@ public class PhoneController implements Initializable{
 								nextLineSMS = false;
 								phoneStatus = ePhoneStatus.IDLE;
 								publish("ps");
+							}
+							else if (s.startsWith(">"))
+							{
+								gl.linemode = true;
+								sh.portWrite(txtText.getText());
+								byte [] ctrlz = {0x1a};
+								sh.portWrite(ctrlz);
 							}
 							else if (s.startsWith("RING"))
 							{
@@ -134,7 +147,7 @@ public class PhoneController implements Initializable{
 									playaudio();
 								}
 							}
-							else if (s.startsWith("NO CARRIER"))
+							else if (s.startsWith("NO CARRIER") || s.startsWith("+CMGS:"))
 							{
 //									phoneStatus = ePhoneStatus.IDLE;
 								System.out.println("Stopped");
@@ -259,6 +272,10 @@ public class PhoneController implements Initializable{
 			if (chkSMS.isSelected())
 			{
 				// send SMS
+				gl.linemode = false;  // we are waiting for a single >
+				String smcmd = "AT+CMGS=\""+txtNumber.getText()+"\"\r";
+				sh.portWrite(smcmd);
+				setStatus(ePhoneStatus.SMSOUT);
 			}
 			else
 			{
