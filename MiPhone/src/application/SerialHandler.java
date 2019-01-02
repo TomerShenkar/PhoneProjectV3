@@ -4,8 +4,8 @@ import java.util.Arrays;
 import com.fazecast.jSerialComm.*;
 
 public class SerialHandler {
-	private static SerialPort [] ports;
-	private static int portIndex;
+	private static SerialPort [] ports; // static so that Main & PhoneController
+	private static int portIndex;       // refer to the same port
 	private String [] namesArray;
 	private SerialListener listener;
 	public SerialHandler()
