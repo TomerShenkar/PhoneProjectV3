@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.media.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
@@ -43,8 +45,8 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="btnGreen" mnemonicParsing="false" onAction="#pressGreen" text="Green" />
-            <Button fx:id="btnRed" mnemonicParsing="false" onAction="#pressRed" text="Red" GridPane.columnIndex="2" />
+            <Button fx:id="btnGreen" mnemonicParsing="false" onAction="#pressGreen" prefHeight="25.0" prefWidth="71.0" />
+            <Button fx:id="btnRed" mnemonicParsing="false" onAction="#pressRed" prefHeight="25.0" prefWidth="77.0" GridPane.columnIndex="2" />
             <Label text="Number" GridPane.rowIndex="2" />
             <Label fx:id="lblStatus" text="Status: Idle" GridPane.columnIndex="1" />
             <Label text="Text" GridPane.rowIndex="3" />
@@ -84,7 +86,7 @@
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addDigit" text="#" GridPane.columnIndex="2" GridPane.rowIndex="3" />
          </children>
       </GridPane>
-      <HBox>
+      <HBox prefHeight="21.0" prefWidth="322.0">
          <children>
             <ComboBox fx:id="cbComPorts" prefWidth="150.0" />
             <Button fx:id="btnOpen" mnemonicParsing="false" onAction="#openPort" text="Open" />

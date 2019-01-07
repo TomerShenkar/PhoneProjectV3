@@ -1,6 +1,8 @@
 package application;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -21,6 +23,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -60,7 +64,7 @@ public class PhoneController implements Initializable{
 	private Media mRing,mVideo;
 	boolean callPlaying = false;
 	boolean loopPlay = true;
-	boolean playHands = false;
+	boolean playHands = true;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -119,6 +123,31 @@ public class PhoneController implements Initializable{
 		
 		txtNumber.setText("0545919886");
 		txtText.setText("blah");
+		// button images
+		FileInputStream redinput = null;
+		try {
+			redinput = new FileInputStream("src/media/endcall.png");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        Image redimage = new Image(redinput);
+        ImageView redview = new ImageView(redimage);
+        redview.setFitWidth(20);
+        redview.setFitHeight(20);
+		btnRed.setGraphic(redview);
+		FileInputStream greeninput = null;
+		try {
+			greeninput = new FileInputStream("src/media/startcall.png");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        Image greenimage = new Image(greeninput);
+        ImageView greenview = new ImageView(greenimage);
+        greenview.setFitWidth(20);
+        greenview.setFitHeight(20);
+		btnGreen.setGraphic(greenview);
 	}
 	public void openPort(ActionEvent ev)
 	{
