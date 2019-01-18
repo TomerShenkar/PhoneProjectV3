@@ -1,5 +1,8 @@
 package application;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -10,9 +13,9 @@ public class CVController extends MainController{
 	private String[] arr = sqld.selectAll();
 	private String number;
 	@FXML TextField tf;
-	@FXML ComboBox<String> cmBox;
+	@FXML ComboBox<String> cmBox; //Used for contact display 
 	
-	public void fillCM(ActionEvent Event)  {
+	public void initialize(URL arg0, ResourceBundle arg1)  {
 		for(int i = 0; i<arr.length; i++) {
 			//System.out.println(arr[i]);
 			cmBox.getItems().add(arr[i]);
@@ -21,8 +24,9 @@ public class CVController extends MainController{
 	}
 	
 	public void pickContact() {
-		String tmp = arr[cmBox.getSelectionModel().getSelectedIndex()];
-		String[] conParts = tmp.split("@");
+		int selectedInt = cmBox.getSelectionModel().getSelectedIndex();
+		String selectedString = arr[selectedInt];
+		String[] conParts = selectedString.split("@");
 		String conName = conParts[0];
 		number = conParts[1];
 		displayTF(conName);

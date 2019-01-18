@@ -26,7 +26,7 @@ public class MainController extends Main implements Initializable {
 	int activePort;
 	String phoneNum = "";
 	@FXML TextArea t;
-	@FXML public ComboBox<String> comboBox;
+	@FXML public ComboBox<String> comboBox = new ComboBox<String>();
 	@FXML Button OpenPort;
 	@FXML AnchorPane AP;
 	@FXML Button closeButton;

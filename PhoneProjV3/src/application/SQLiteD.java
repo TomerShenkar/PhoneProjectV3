@@ -24,7 +24,7 @@ public class SQLiteD {
         	ArrayList<String> names = new ArrayList<String>();
 
         	while (rs.next()) {
-        	    names.add(rs.getString("Name") + " ^ " + rs.getString("Number") + " ");
+        	    names.add(rs.getString("Name") + "@" + rs.getString("Number") + " ");
         	}
 
         	// finally turn the array lists into arrays - if really needed
