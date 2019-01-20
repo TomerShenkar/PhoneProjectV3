@@ -16,7 +16,7 @@
       <Button layoutX="412.0" layoutY="141.0" mnemonicParsing="false" text="Edit" />
       <Button layoutX="325.0" layoutY="174.0" mnemonicParsing="false" text="Delete" />
       <Button layoutX="381.0" layoutY="174.0" mnemonicParsing="false" text="Create" />
-      <ComboBox fx:id="cmBox" layoutX="77.0" layoutY="73.0" prefHeight="28.0" prefWidth="223.0" />
+      <ComboBox fx:id="cmBox" layoutX="77.0" layoutY="73.0" onAction="#pickContact" prefHeight="28.0" prefWidth="223.0" />
       <Label layoutX="231.0" layoutY="20.0" prefHeight="28.0" prefWidth="149.0" text="Contacts View">
          <font>
             <Font size="20.0" />

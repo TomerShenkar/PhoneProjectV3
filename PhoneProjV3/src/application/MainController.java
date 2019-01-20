@@ -3,9 +3,7 @@ package application;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-
 import javax.swing.SwingWorker;
-
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,47 +18,54 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainController extends Main implements Initializable {
-
+	//CLASS VERIABLES
 	private serialHandler SH = new serialHandler();
 	private SQLiteD sql = new SQLiteD();
+	getLine GetLine = new getLine();
+    protected Stage CVstage = new Stage();
+    
+    //PORT VERIABLES
+	String[] names = SH.listOfPorts();
 	int activePort;
-	String phoneNum = "";
-	@FXML TextArea t;
-	@FXML public ComboBox<String> comboBox = new ComboBox<String>();
-	@FXML Button OpenPort;
-	@FXML AnchorPane AP;
-	@FXML Button closeButton;
-	@FXML private AnchorPane rootPane;
-	protected static enum State {
-		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall;
-	}
-
-	protected static State PhoneState = State.Idle;
+	static String Addition;
+	ObservableList<String> list;
+	
+	//INCOMING MESSAGE/CALL VERIABLES
 	boolean isRing = false; //Made in order to disable multiple prints of same message
 	boolean isClip = false; //Made in order to disable multiple prints of same message
-	boolean nextIsMSG = false;
-	getLine GetLine = new getLine();
-	static String Addition;
-	String[] names = SH.listOfPorts();
-	ObservableList<String> list;
+	boolean nextIsMSG = false; //Made in order to allow print of incoming message
+	
+	//NUMBER VERIABLES
+	String phoneNum = ""; //Typed number
 	String Number; //Incoming caller's number
 	
+	//FXML VERIABLES
+	@FXML public ComboBox<String> comboBox = new ComboBox<String>(); //CommPort display comboBox
+	@FXML TextArea textArea; //Main text area
+	@FXML AnchorPane AP; //CV.fxml's AnchorPane
+	@FXML private AnchorPane rootPane; //Main.fxml's AnchorPane
+	@FXML Button OpenPort; //OpenPort Button
+	
+	//STATE VERIABLES
+	protected static State PhoneState = State.Idle; //Defying the phone state
+	protected static enum State { //Different phone states
+		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall;
+	}
+	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL arg0, ResourceBundle arg1) { //This method adds port names to the combo box
 		for (int i = 0; i < names.length; i++) {
 			comboBox.getItems().add(names[i]);
 		}
 	}
-
-	@FXML
 	
-	public void addKeytoString(ActionEvent event) {
-		String t = ((Button) (event.getSource())).getText();
+	public void addKeytoString(ActionEvent event) { //This method extracts the number from the keypad and sends it to be added to the number string
+		String number = ((Button) (event.getSource())).getText();
 		PhoneState = State.TypingNumber;
-		setNum(t);
+		setNum(number);
 	}
 
-	public void setNum(String s) {
+	public void setNum(String s) { //This method adds the keypad's clicked key to the number string
 		// System.out.println(phoneNum);
 		if (s != null) {
 			phoneNum = phoneNum + s;
@@ -68,29 +73,25 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 
-	public void answer(ActionEvent event) {
-		if(PhoneState == State.TypingNumber) {
+	public void answer(ActionEvent event) { //This method sets the answer key functions 
+		if(PhoneState == State.TypingNumber) { //If TypingNumber = call the number
 			SH.writeString("ATD" + phoneNum + ";", true);
-			setTextArea("\n");
 			setTextArea("Calling " + detectNum(phoneNum) + "\n");
-			//setTextArea("\n");
 		}
-		else if(PhoneState == State.Ringing) {
+		else if(PhoneState == State.Ringing) { //If the phone is ringing = answer the call;
 			SH.writeString("ATA", true);
 			setTextArea("In call with " + Number + "\n");
 		}
 	}
 
-	public void decline(ActionEvent event) {
+	public void decline(ActionEvent event) { //This method ends the call
 		SH.writeString("ATH", true);
-		//setTextArea("\n");
 		setTextArea("Bye");
 		phoneNum = "";
 		setTextArea(phoneNum);
-		//setTextArea("\n");
 	}
 
-	public void clrKey(ActionEvent event) {
+	public void clrKey(ActionEvent event) { //This method clears the last number that is in the number string
 		if (phoneNum.length() > 0) {
 			phoneNum = phoneNum.substring(0, phoneNum.length() - 1);
 			setTextAreaNumber(phoneNum);
@@ -101,16 +102,93 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 
-	public void setTextAreaNumber(String s) {
-		t.setText(s);
+	public void setTextAreaNumber(String s) { //This method displays the number being typed
+		textArea.setText(s);
 	}
 
-	public void setTextArea(String s) {
-		//t.appendText("\r\n");
-		t.appendText(s);
+	public void setTextArea(String display) { //This method displays any other messages needing display that aren't the number
+		textArea.appendText(display);
+		textArea.appendText("\n");
+	}
+	
+	private String detectNum(String temp) { //This method searches a specific number in the SQLite database 
+		if(sql.searchName(temp) == null) {
+			return temp;
+		}
+		return sql.searchName(temp);
 	}
 
-	public void openPort(ActionEvent event) {
+	public String processMSG(String MSG) { //This method turns a +9725... number into a 05... number 
+		String[] MSGParts = MSG.split("\"");
+		String NumberInternational = MSGParts[1];
+		String[] NumberInterParts = NumberInternational.split("+972");
+		String Number = "0" + NumberInterParts[1];
+		return Number;
+	}
+	
+	public void openContacts(ActionEvent event) { //This method opens the CV.fxml window
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/application/CV.fxml"));
+	        Scene scene = new Scene(root);
+	        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+	        CVstage.setScene(scene);
+	        CVstage.show();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String Sim900Parse(String temp) { //This method parses the incoming command and displays it in readable format
+		if (temp != null) { //Text related
+			if (nextIsMSG) {
+				nextIsMSG = false;
+				return ("The message is " + temp);
+			}
+
+			else if (temp.startsWith("RING")) { //Phone Ringing related
+				if (isRing == false) {
+					PhoneState = State.Ringing;
+					isRing = true;
+					return ("Ringing");
+				}
+			}
+
+			else if (temp.startsWith("+CLIP:")) { //Phone Ringing related
+				if (isClip == false) {
+					String[] parts = temp.split("\"");
+					Number = parts[1];
+					PhoneState = State.Ringing;
+					isClip = true;
+					return ("Call from " + detectNum(Number));
+				}
+			}
+
+			else if (temp.startsWith("NO CARRIER")) { //End of call related
+				PhoneState = State.Idle;
+				isRing = false;
+				isClip = false;
+				return ("End of call");
+			}
+
+			else if (temp.startsWith("+CCLK:")) { //Clock related
+				// Clock code
+			}
+
+			else if (temp.startsWith("+CMT:")) { //Text related
+				String Number = processMSG(temp);
+				nextIsMSG = true;
+				return ("Text from " + Number);
+			}
+
+			else {
+				// None of the above
+			}
+		}
+		return "";
+	}
+	
+	public void openPort(ActionEvent event) { //This method opens the port and sets the listener for incoming commands
 		if (SH.portOpener(comboBox.getSelectionModel().getSelectedIndex())) {
 			serialListener sl = new collectSerialData();
 			SH.setListener(sl);
@@ -145,6 +223,7 @@ public class MainController extends Main implements Initializable {
 				}
 
 				// Can safely update the GUI from this method.
+				@Override
 				protected void done() {
 				}
 
@@ -168,84 +247,6 @@ public class MainController extends Main implements Initializable {
 			worker.execute();
 			boolean disable = true; // Setting OpenPort button to be disabled from the command did not work.
 			OpenPort.setDisable(disable);
-		}
-	}
-	
-	private String detectNum(String temp) {
-		if(sql.searchName(temp) == null) {
-			return temp;
-		}
-		return sql.searchName(temp);
-	}
-	
-	private String Sim900Parse(String temp) {
-		if (temp != null) { //Text related
-			if (nextIsMSG) {
-				nextIsMSG = false;
-				return ("The message is " + temp + "\n");
-			}
-
-			else if (temp.startsWith("RING")) { //Phone Ringing related
-				if (isRing == false) {
-					PhoneState = State.Ringing;
-					isRing = true;
-					return ("Ringing" + "\n");
-				}
-			}
-
-			else if (temp.startsWith("+CLIP:")) { //Phone Ringing related
-				if (isClip == false) {
-					String[] parts = temp.split("\"");
-					Number = parts[1];
-					PhoneState = State.Ringing;
-					isClip = true;
-					return ("Call from " + detectNum(Number) + "\n");
-				}
-			}
-
-			else if (temp.startsWith("NO CARRIER")) { //End of call related
-				PhoneState = State.Idle;
-				isRing = false;
-				isClip = false;
-				return ("End of call" + "\n");
-			}
-
-			else if (temp.startsWith("+CCLK:")) { //Clock related
-				// Clock code
-			}
-
-			else if (temp.startsWith("+CMT:")) { //Text related
-				String Number = processMSG(temp);
-				nextIsMSG = true;
-				return ("Text from " + Number + "\n");
-			}
-
-			else {
-				// None of the above
-			}
-		}
-		return "";
-	}
-
-	public static String processMSG(String MSG) { //This turns a +9725... number into a 05... number 
-		String[] MSGParts = MSG.split("\"");
-		String NumberInternational = MSGParts[1];
-		String[] NumberInterParts = NumberInternational.split("+972");
-		String Number = "0" + NumberInterParts[1];
-		return Number;
-	}
-	
-	public void openContacts(ActionEvent event) {
-		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/application/CV.fxml"));
-	        Scene scene = new Scene(root);
-	        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-	        Stage stage = new Stage();
-	        stage.setScene(scene);
-	        stage.show();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
 		}
 	}
 }

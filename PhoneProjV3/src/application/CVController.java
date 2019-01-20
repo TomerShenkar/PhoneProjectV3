@@ -19,13 +19,14 @@ public class CVController extends MainController{
 		for(int i = 0; i<arr.length; i++) {
 			//System.out.println(arr[i]);
 			cmBox.getItems().add(arr[i]);
-			pickContact();
 		}
 	}
 	
-	public void pickContact() {
-		int selectedInt = cmBox.getSelectionModel().getSelectedIndex();
-		String selectedString = arr[selectedInt];
+	public void pickContact(ActionEvent event) {
+		if(cmBox.getSelectionModel().getSelectedIndex() == -1) {
+			displayTF("Error");
+		}
+		String selectedString = arr[cmBox.getSelectionModel().getSelectedIndex()];
 		String[] conParts = selectedString.split("@");
 		String conName = conParts[0];
 		number = conParts[1];
@@ -35,7 +36,9 @@ public class CVController extends MainController{
 	public void placeCall(ActionEvent event) {
 		if(number != null) {
 			phoneNum = number;
+			PhoneState = State.TypingNumber;
 			answer(event);
+			CVstage.hide();
 		}
 	}
 	
