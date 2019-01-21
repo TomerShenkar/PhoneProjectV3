@@ -5,9 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.ResourceBundle;
-
 import javax.swing.SwingWorker;
-
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,14 +21,13 @@ import javafx.stage.Stage;
 
 public class MainController extends Main implements Initializable {
 	//CLASS VERIABLES
-	private serialHandler SH = new serialHandler();
-	protected serialListener sl = new collectSerialData();
+	protected static serialListener sl = new collectSerialData();
 	private SQLiteD sql = new SQLiteD();
 	getLine GetLine = new getLine();
     protected Stage CVstage = new Stage();
     
     //PORT VERIABLES
-	String[] names = SH.listOfPorts();
+	String[] names = SH1.listOfPorts();
 	int activePort;
 	static Queue<String> Addition = new LinkedList<String>();
 	ObservableList<String> list;
@@ -48,13 +45,12 @@ public class MainController extends Main implements Initializable {
 	@FXML public ComboBox<String> comboBox; //CommPort display comboBox
 	@FXML TextArea textArea; //Main text area
 	@FXML AnchorPane AP; //CV.fxml's AnchorPane
-	@FXML private AnchorPane rootPane; //Main.fxml's AnchorPane
 	@FXML Button OpenPort; //OpenPort Button
 	
 	//STATE VERIABLES
 	protected static State PhoneState = State.Idle; //Defying the phone state
 	protected static enum State { //Different phone states
-		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall;
+		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall, DialingFromContacts;
 	}
 	
 	@Override
@@ -80,19 +76,19 @@ public class MainController extends Main implements Initializable {
 
 	public void answer(ActionEvent event) { //This method sets the answer key functions 
 		if(PhoneState == State.TypingNumber) { //If TypingNumber = call the number
-			SH.writeString("ATD" + phoneNum + ";", true);
+			SH1.writeString("ATD" + phoneNum + ";", true);
 			PhoneState = State.Dialing;
 			setTextAreaState("Whatever");
 		}
 		else if(PhoneState == State.Ringing) { //If the phone is ringing = answer the call;
-			SH.writeString("ATA", true);
+			SH1.writeString("ATA", true);
 			PhoneState = State.DuringCall;
 			setTextAreaState("Whatever");
 		}
 	}
 
 	public void decline(ActionEvent event) { //This method ends the call
-		SH.writeString("ATH", true);
+		SH1.writeString("ATH", true);
 		//setTextArea("Bye");
 		phoneNum = "";
 		PhoneState = State.Idle;
@@ -116,7 +112,7 @@ public class MainController extends Main implements Initializable {
 	}
 	
 	public void setTextAreaState(String incoming) { //This method displays any other messages needing display that aren't the number
-
+		
 		if(PhoneState == State.Idle) {
 			textArea.setText("End of call"); //Clears the textArea
 		}
@@ -135,6 +131,16 @@ public class MainController extends Main implements Initializable {
 		else if(PhoneState == State.DuringCall) {
 			textArea.appendText("In call with " + detectNum(Number) + "\n");
 		}
+		else if(PhoneState == State.DialingFromContacts) {
+			textArea.appendText("Calling from contacts to " + detectNum(Number.trim()) + "\n");
+		}
+		
+		/*Platform.runLater(new Runnable() {
+		    public void run() {
+		        textArea.appendText(incoming);
+		    }
+		});*/
+
 	}
 	
 	public void setTextArea(String display) { //This method displays any other messages needing display that aren't the number
@@ -165,8 +171,7 @@ public class MainController extends Main implements Initializable {
 	        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	        CVstage.setScene(scene);
 	        CVstage.show();
-	        CVController cvc = fxmlloader.getController();
-	        cvc.setListener(sl);
+	        //CVController cvc = fxmlloader.getController();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -212,8 +217,10 @@ public class MainController extends Main implements Initializable {
 			else if(temp.startsWith("+TA:")) { //Only used for showing the dialed number when calling from ContactsView
 				String[] numberParts = temp.split(":");
 				Number = numberParts[1];
-				PhoneState = State.Dialing;
-				return("Calling from contacts to" + Number);
+				PhoneState = State.DialingFromContacts;
+				String s = "ATD" + Number.trim() + ";";
+				SH1.writeString(s, true);
+				return("Calling from contacts to " + detectNum(Number.trim()));
 			}
 			
 			else if (temp.startsWith("+CMT:")) { //Text related
@@ -230,20 +237,20 @@ public class MainController extends Main implements Initializable {
 	}
 	
 	public void openPort(ActionEvent event) { //This method opens the port and sets the listener for incoming commands
-		if (SH.portOpener(comboBox.getSelectionModel().getSelectedIndex())) {
-			SH.setListener(sl);
+		if (SH1.portOpener(comboBox.getSelectionModel().getSelectedIndex())) {
+			SH1.setListener(sl);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
 				@Override
 				protected Boolean doInBackground() throws Exception {
 					int x = 10;
 					while (x < 1000) {
+						Thread.sleep(100);
 						if (!Addition.isEmpty()) {
 							GetLine.addRaw(Addition.remove());
-							
-							while (!GetLine.getQ().isEmpty()) { //Empty the queue.
+						}
+							while (!GetLine.getQ().isEmpty()) { //Emptying the queue.
 								String temp = GetLine.getNext(); 
 								publish(Sim900Parse(temp)); //Complete line should be here
-							}
 						}
 					}
 					return true;

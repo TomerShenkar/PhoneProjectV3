@@ -7,11 +7,10 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-//import javafx.scene.layout.BorderPane;
 
 public class Main extends Application {
 	
-	serialHandler SH = new serialHandler();	
+	serialHandler SH1 = new serialHandler();	
 	public void start(Stage primaryStage) {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/application/Main.fxml"));
@@ -21,7 +20,7 @@ public class Main extends Application {
 			primaryStage.setOnHiding(new EventHandler<WindowEvent>() {
 				@Override
 				public void handle(WindowEvent arg0) {
-					SH.portCloser(); //PROGRAM CRASHES IF PORT ISN'T OPENED!!
+					SH1.portCloser(); 
 				}
 			});
 			primaryStage.show();
