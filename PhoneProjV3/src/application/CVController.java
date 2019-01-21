@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 
 public class CVController extends MainController{
 	private SQLiteD sqld = new SQLiteD();
+	private serialListener listener;
 	private String[] arr = sqld.selectAll();
 	private String number;
 	@FXML TextField tf;
@@ -35,14 +36,17 @@ public class CVController extends MainController{
 	
 	public void placeCall(ActionEvent event) {
 		if(number != null) {
-			phoneNum = number;
-			PhoneState = State.TypingNumber;
-			answer(event);
+			String send = "+TA:" + number + "\r";
+			listener.serialData(send.getBytes());
 			CVstage.hide();
 		}
 	}
 	
 	public void displayTF(String s) { //S being the value you want to display
 		tf.setText(s);
+	}
+	
+	public void setListener(serialListener sl) {
+		listener = sl;
 	}
 }

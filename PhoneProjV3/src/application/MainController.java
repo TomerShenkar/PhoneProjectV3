@@ -1,9 +1,13 @@
 package application;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.ResourceBundle;
+
 import javax.swing.SwingWorker;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,6 +24,7 @@ import javafx.stage.Stage;
 public class MainController extends Main implements Initializable {
 	//CLASS VERIABLES
 	private serialHandler SH = new serialHandler();
+	protected serialListener sl = new collectSerialData();
 	private SQLiteD sql = new SQLiteD();
 	getLine GetLine = new getLine();
     protected Stage CVstage = new Stage();
@@ -27,7 +32,7 @@ public class MainController extends Main implements Initializable {
     //PORT VERIABLES
 	String[] names = SH.listOfPorts();
 	int activePort;
-	static String Addition;
+	static Queue<String> Addition = new LinkedList<String>();
 	ObservableList<String> list;
 	
 	//INCOMING MESSAGE/CALL VERIABLES
@@ -40,7 +45,7 @@ public class MainController extends Main implements Initializable {
 	String Number; //Incoming caller's number
 	
 	//FXML VERIABLES
-	@FXML public ComboBox<String> comboBox = new ComboBox<String>(); //CommPort display comboBox
+	@FXML public ComboBox<String> comboBox; //CommPort display comboBox
 	@FXML TextArea textArea; //Main text area
 	@FXML AnchorPane AP; //CV.fxml's AnchorPane
 	@FXML private AnchorPane rootPane; //Main.fxml's AnchorPane
@@ -76,19 +81,23 @@ public class MainController extends Main implements Initializable {
 	public void answer(ActionEvent event) { //This method sets the answer key functions 
 		if(PhoneState == State.TypingNumber) { //If TypingNumber = call the number
 			SH.writeString("ATD" + phoneNum + ";", true);
-			setTextArea("Calling " + detectNum(phoneNum) + "\n");
+			PhoneState = State.Dialing;
+			setTextAreaState("Whatever");
 		}
 		else if(PhoneState == State.Ringing) { //If the phone is ringing = answer the call;
 			SH.writeString("ATA", true);
-			setTextArea("In call with " + Number + "\n");
+			PhoneState = State.DuringCall;
+			setTextAreaState("Whatever");
 		}
 	}
 
 	public void decline(ActionEvent event) { //This method ends the call
 		SH.writeString("ATH", true);
-		setTextArea("Bye");
+		//setTextArea("Bye");
 		phoneNum = "";
-		setTextArea(phoneNum);
+		PhoneState = State.Idle;
+		setTextAreaState("Whatever");
+		//setTextArea(phoneNum);
 	}
 
 	public void clrKey(ActionEvent event) { //This method clears the last number that is in the number string
@@ -105,17 +114,39 @@ public class MainController extends Main implements Initializable {
 	public void setTextAreaNumber(String s) { //This method displays the number being typed
 		textArea.setText(s);
 	}
+	
+	public void setTextAreaState(String incoming) { //This method displays any other messages needing display that aren't the number
 
+		if(PhoneState == State.Idle) {
+			textArea.setText("End of call"); //Clears the textArea
+		}
+		else if(PhoneState == State.TypingNumber) {
+			//Do nothing, this is setTextAreaNumber
+		}
+		else if(PhoneState == State.TypingMessage) {
+			//This is for later - will show message typing (or in a separate function
+		}
+		else if(PhoneState == State.Dialing) {
+			textArea.appendText("Calling " + detectNum(phoneNum) + "\n");
+		}
+		else if(PhoneState == State.Ringing) {
+			textArea.appendText(detectNum(Number) + " Is calling" + "\n");
+		}
+		else if(PhoneState == State.DuringCall) {
+			textArea.appendText("In call with " + detectNum(Number) + "\n");
+		}
+	}
+	
 	public void setTextArea(String display) { //This method displays any other messages needing display that aren't the number
-		textArea.appendText(display);
-		textArea.appendText("\n");
+		textArea.appendText("\n" + display + "\n");
 	}
 	
 	private String detectNum(String temp) { //This method searches a specific number in the SQLite database 
-		if(sql.searchName(temp) == null) {
-			return temp;
+		String returnVal = sql.searchName(temp);
+		if(returnVal == null) {
+			returnVal = temp;
 		}
-		return sql.searchName(temp);
+		return returnVal;
 	}
 
 	public String processMSG(String MSG) { //This method turns a +9725... number into a 05... number 
@@ -128,11 +159,14 @@ public class MainController extends Main implements Initializable {
 	
 	public void openContacts(ActionEvent event) { //This method opens the CV.fxml window
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/application/CV.fxml"));
+			FXMLLoader fxmlloader = new FXMLLoader(getClass().getResource("/application/CV.fxml"));
+			Parent root = (Parent) fxmlloader.load(); 
 	        Scene scene = new Scene(root);
 	        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	        CVstage.setScene(scene);
 	        CVstage.show();
+	        CVController cvc = fxmlloader.getController();
+	        cvc.setListener(sl);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -174,7 +208,14 @@ public class MainController extends Main implements Initializable {
 			else if (temp.startsWith("+CCLK:")) { //Clock related
 				// Clock code
 			}
-
+			
+			else if(temp.startsWith("+TA:")) { //Only used for showing the dialed number when calling from ContactsView
+				String[] numberParts = temp.split(":");
+				Number = numberParts[1];
+				PhoneState = State.Dialing;
+				return("Calling from contacts to" + Number);
+			}
+			
 			else if (temp.startsWith("+CMT:")) { //Text related
 				String Number = processMSG(temp);
 				nextIsMSG = true;
@@ -190,59 +231,41 @@ public class MainController extends Main implements Initializable {
 	
 	public void openPort(ActionEvent event) { //This method opens the port and sets the listener for incoming commands
 		if (SH.portOpener(comboBox.getSelectionModel().getSelectedIndex())) {
-			serialListener sl = new collectSerialData();
 			SH.setListener(sl);
-			// SH.writeString("AT+CCLK?\r", true);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
 				@Override
 				protected Boolean doInBackground() throws Exception {
-					// Simulate doing something useful.
 					int x = 10;
 					while (x < 1000) {
-						Thread.sleep(1000);
-						// The type we pass to publish() is determined
-						// by the second template parameter.
-						if (Addition != null) {
-							GetLine.addRaw(Addition);
-							// System.out.print(OldestValue);
-
+						if (!Addition.isEmpty()) {
+							GetLine.addRaw(Addition.remove());
+							
 							while (!GetLine.getQ().isEmpty()) { //Empty the queue.
 								String temp = GetLine.getNext(); 
 								publish(Sim900Parse(temp)); //Complete line should be here
 							}
-							// publish(Addition);
-							// System.out.print(Addition);
-							// Addition = "";
 						}
 					}
-
-					// Here we can return some object of whatever type
-					// we specified for the first template parameter.
-					// (in this case we're auto-boxing 'true').
 					return true;
 				}
-
-				// Can safely update the GUI from this method.
+				
 				@Override
 				protected void done() {
+					
 				}
-
+				
 				@Override
-				// Can safely update the GUI from this method.
 				protected void process(List<String> chunks) {
-					// Here we receive the values that we publish().
-					// They may come grouped in chunks.
 					if (chunks.size() > 0) {
 						for (int i = 0; i < chunks.size(); i++) {
 							String OldestValue = chunks.get(i);
 							if(!OldestValue.equals("")) {
-								setTextArea(OldestValue);
+								setTextAreaState(OldestValue);
 							}
 						}
 						chunks.clear();
 					}
 				}
-
 			};
 			worker.execute();
 			boolean disable = true; // Setting OpenPort button to be disabled from the command did not work.
