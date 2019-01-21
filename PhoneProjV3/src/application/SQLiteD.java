@@ -34,8 +34,9 @@ public class SQLiteD {
         	return resArray;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return null;
         }
+        return null;
+
     }
 	
     public void getNameOrNumber(String searchParam){ //searchParam being Name/Number
@@ -65,24 +66,23 @@ public class SQLiteD {
             
         } catch (SQLException e) {
               System.out.println(e.getMessage());
-              return null;
           }
         return null;
       }
     
-    public void searchSpecific(String searchColumn, String searchParam){ //searchColumn being Name/Number, searchParam being the search keyword	
-      String sql = "SELECT * FROM con Where " + searchColumn + " Like " + "'" + searchParam + "%'";
-      //String sql = "SELECT * FROM con Where " + searchColumn + " = " +  searchParam;
-   
+    public String searchSpecific(String searchColumn1, String searchColumn2, String searchParam){ //searchColumn1/2 being Name/Number, searchParam being the search keyword	
+      String sql = "SELECT " + searchColumn1 +" FROM con WHERE " + searchColumn2 + " Like " + "'" + searchParam + "%'";
+      //SELECT Number FROM con WHERE Name = 'Tomer'; ---> 0546951919
       try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)){
           
           // loop through the result set
           while (rs.next()) {
-              System.out.println(rs.getString(searchColumn));
+              return(rs.getString(searchColumn1));
           }
       } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+      return null;
     }
     
     public void insert(String insName, String insNumber) {

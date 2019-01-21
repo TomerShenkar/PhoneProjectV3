@@ -28,10 +28,10 @@ public class MainController extends Main implements Initializable {
     
     //PORT VERIABLES
 	String[] names = SH1.listOfPorts();
-	int activePort;
+	int activePort = -1;
 	static Queue<String> Addition = new LinkedList<String>();
 	ObservableList<String> list;
-	
+
 	//INCOMING MESSAGE/CALL VERIABLES
 	boolean isRing = false; //Made in order to disable multiple prints of same message
 	boolean isClip = false; //Made in order to disable multiple prints of same message
@@ -56,7 +56,11 @@ public class MainController extends Main implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) { //This method adds port names to the combo box
 		for (int i = 0; i < names.length; i++) {
-			comboBox.getItems().add(names[i]);
+			if(names[i].startsWith("Sil")) {
+				activePort = i;
+				comboBox.setValue(names[i]);
+			}
+		comboBox.getItems().add(names[i]);
 		}
 	}
 	
@@ -171,8 +175,7 @@ public class MainController extends Main implements Initializable {
 	        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	        CVstage.setScene(scene);
 	        CVstage.show();
-	        //CVController cvc = fxmlloader.getController();
-		}
+			}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -237,7 +240,8 @@ public class MainController extends Main implements Initializable {
 	}
 	
 	public void openPort(ActionEvent event) { //This method opens the port and sets the listener for incoming commands
-		if (SH1.portOpener(comboBox.getSelectionModel().getSelectedIndex())) {
+		//if (SH1.portOpener(comboBox.getSelectionModel().getSelectedIndex())) { 
+		if (SH1.portOpener(activePort)) {
 			SH1.setListener(sl);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
 				@Override
