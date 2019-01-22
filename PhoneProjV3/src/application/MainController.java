@@ -24,7 +24,6 @@ public class MainController extends Main implements Initializable {
 	protected static serialListener sl = new collectSerialData();
 	private SQLiteD sql = new SQLiteD();
 	getLine GetLine = new getLine();
-    protected Stage CVstage = new Stage();
     
     //PORT VERIABLES
 	String[] names = SH1.listOfPorts();
@@ -173,6 +172,7 @@ public class MainController extends Main implements Initializable {
 			Parent root = (Parent) fxmlloader.load(); 
 	        Scene scene = new Scene(root);
 	        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+	        Stage CVstage = new Stage();
 	        CVstage.setScene(scene);
 	        CVstage.show();
 			}

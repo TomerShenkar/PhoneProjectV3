@@ -36,7 +36,6 @@ public class SQLiteD {
             System.out.println(e.getMessage());
         }
         return null;
-
     }
 	
     public void getNameOrNumber(String searchParam){ //searchParam being Name/Number

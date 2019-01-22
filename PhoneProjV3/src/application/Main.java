@@ -1,6 +1,7 @@
 package application;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -21,6 +22,7 @@ public class Main extends Application {
 				@Override
 				public void handle(WindowEvent arg0) {
 					SH1.portCloser(); 
+					Platform.exit();
 				}
 			});
 			primaryStage.show();

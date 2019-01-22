@@ -5,10 +5,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Box?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.CVController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="224.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.CVController">
    <children>
       <TextField fx:id="tf" layoutX="325.0" layoutY="75.0" />
       <Button layoutX="481.0" layoutY="75.0" mnemonicParsing="false" text="Search" />
@@ -16,7 +15,7 @@
       <Button layoutX="367.0" layoutY="141.0" mnemonicParsing="false" text="Text" />
       <Button layoutX="412.0" layoutY="141.0" mnemonicParsing="false" text="Edit" />
       <Button layoutX="325.0" layoutY="174.0" mnemonicParsing="false" text="Delete" />
-      <Button layoutX="381.0" layoutY="174.0" mnemonicParsing="false" text="Create" />
+      <Button fx:id="OpenNew" layoutX="381.0" layoutY="174.0" mnemonicParsing="false" onAction="#openConAdder" text="Create" />
       <ComboBox fx:id="cmBox" layoutX="77.0" layoutY="73.0" onAction="#pickContact" prefHeight="28.0" prefWidth="223.0" />
       <Label layoutX="231.0" layoutY="20.0" prefHeight="28.0" prefWidth="149.0" text="Contacts View">
          <font>
@@ -29,6 +28,5 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <Box depth="100" height="100" layoutX="165.0" layoutY="290.0" width="100" />
    </children>
 </AnchorPane>
