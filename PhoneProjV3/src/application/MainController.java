@@ -49,7 +49,7 @@ public class MainController extends Main implements Initializable {
 	//STATE VERIABLES
 	protected static State PhoneState = State.Idle; //Defying the phone state
 	protected static enum State { //Different phone states
-		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall, DialingFromContacts;
+		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall, DialingFromContacts, DeclinedCall, callPickedUp;
 	}
 	
 	@Override
@@ -91,12 +91,12 @@ public class MainController extends Main implements Initializable {
 	}
 
 	public void decline(ActionEvent event) { //This method ends the call
-		SH1.writeString("ATH", true);
-		//setTextArea("Bye");
-		phoneNum = "";
-		PhoneState = State.Idle;
-		setTextAreaState("Whatever");
-		//setTextArea(phoneNum);
+		if(PhoneState == State.Ringing || PhoneState == State.DuringCall || PhoneState == State.Dialing || PhoneState == State.DialingFromContacts) {
+			SH1.writeString("ATH", true);
+			phoneNum = "";
+			PhoneState = State.DeclinedCall;
+			setTextAreaState("Whatever");
+		}
 	}
 
 	public void clrKey(ActionEvent event) { //This method clears the last number that is in the number string
@@ -117,7 +117,7 @@ public class MainController extends Main implements Initializable {
 	public void setTextAreaState(String incoming) { //This method displays any other messages needing display that aren't the number
 		
 		if(PhoneState == State.Idle) {
-			textArea.setText("End of call"); //Clears the textArea
+			textArea.setText(""); //Clears the textArea
 		}
 		else if(PhoneState == State.TypingNumber) {
 			//Do nothing, this is setTextAreaNumber
@@ -126,7 +126,7 @@ public class MainController extends Main implements Initializable {
 			//This is for later - will show message typing (or in a separate function
 		}
 		else if(PhoneState == State.Dialing) {
-			textArea.appendText("Calling " + detectNum(phoneNum) + "\n");
+			textArea.appendText("\n" + "Calling " + detectNum(phoneNum) + "\n");
 		}
 		else if(PhoneState == State.Ringing) {
 			textArea.appendText(detectNum(Number) + " Is calling" + "\n");
@@ -135,7 +135,16 @@ public class MainController extends Main implements Initializable {
 			textArea.appendText("In call with " + detectNum(Number) + "\n");
 		}
 		else if(PhoneState == State.DialingFromContacts) {
-			textArea.appendText("Calling from contacts to " + detectNum(Number.trim()) + "\n");
+			textArea.appendText("\n" + "Calling from contacts to " + detectNum(Number.trim()) + "\n");
+		}
+		
+		else if(PhoneState == State.DeclinedCall) {
+			textArea.appendText("Call Ended" + "\n");
+		}
+		
+		else if(PhoneState == State.callPickedUp) {
+			textArea.appendText(incoming + "\n");
+			PhoneState = State.DuringCall;
 		}
 		
 		/*Platform.runLater(new Runnable() {
@@ -190,12 +199,14 @@ public class MainController extends Main implements Initializable {
 
 			else if (temp.startsWith("RING")) { //Phone Ringing related
 				if (isRing == false) {
+					String[] parts = temp.split("\"");
+					Number = parts[1];
 					PhoneState = State.Ringing;
 					isRing = true;
-					return ("Ringing");
+					return ("Ringing " + detectNum(Number));
 				}
 			}
-
+			
 			else if (temp.startsWith("+CLIP:")) { //Phone Ringing related
 				if (isClip == false) {
 					String[] parts = temp.split("\"");
@@ -205,9 +216,17 @@ public class MainController extends Main implements Initializable {
 					return ("Call from " + detectNum(Number));
 				}
 			}
-
+			
+			else if(temp.startsWith("+COLP:")) { //Phone call related
+				//Only when this phone is calling - Doesn't work for declined call from client 
+				String[] parts = temp.split("\"");
+				String Number = parts[1];
+				PhoneState = State.callPickedUp;
+				return ("In call with " + detectNum(Number));
+			}
+			
 			else if (temp.startsWith("NO CARRIER")) { //End of call related
-				PhoneState = State.Idle;
+				PhoneState = State.DeclinedCall;
 				isRing = false;
 				isClip = false;
 				return ("End of call");
@@ -223,7 +242,7 @@ public class MainController extends Main implements Initializable {
 				PhoneState = State.DialingFromContacts;
 				String s = "ATD" + Number.trim() + ";";
 				SH1.writeString(s, true);
-				return("Calling from contacts to " + detectNum(Number.trim()));
+				return("Calling (from contacts) to " + detectNum(Number.trim()));
 			}
 			
 			else if (temp.startsWith("+CMT:")) { //Text related
