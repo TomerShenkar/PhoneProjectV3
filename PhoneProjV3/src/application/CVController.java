@@ -16,14 +16,17 @@ import javafx.stage.Stage;
 
 public class CVController extends MainController{
 	private SQLiteD sqld = new SQLiteD();
+	
 	private String[] arr = sqld.selectAll();
 	private String number;
+	static String selectedName;
+	boolean isRefreshed = false;
+	
 	@FXML TextField tf;
 	@FXML ComboBox<String> cmBox = new ComboBox<String>(); //Used for contact display 
 	@FXML Button SDTomer;
 	@FXML Button OpenConCreator;
 	@FXML Button OpenConEditor;
-	static String selectedName;
 
 	public void initialize(URL arg0, ResourceBundle arg1)  {
 		if(arr != null || arr.length > 0) {
@@ -48,7 +51,7 @@ public class CVController extends MainController{
 	public String getSelectedName() {
 		return selectedName;
 	}
-
+	
 	public void placeCall(ActionEvent event) {
 		if(number != null) {
 			String send = "+TA:" + number + "\n";
@@ -56,7 +59,7 @@ public class CVController extends MainController{
 			((Node)(event.getSource())).getScene().getWindow().hide();
 		}
 	}
-	
+		
 	public void speedDial(ActionEvent event) {
 		String speedDialName = ((Button) (event.getSource())).getText();
 		String speedDialNumber = sqld.searchSpecific("Number", "Name", speedDialName);
@@ -66,6 +69,7 @@ public class CVController extends MainController{
 	
 	public void deleteCon(ActionEvent event) {
 		sqld.delete("Name", selectedName);
+		isRefreshed = true;
 		((Node)(event.getSource())).getScene().getWindow().hide();
 	}
 	
@@ -82,7 +86,6 @@ public class CVController extends MainController{
 	    	Stage addConStage = new Stage();
 	        addConStage.setScene(scene);
 	        addConStage.show();
-            ((Node)(event.getSource())).getScene().getWindow().hide();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +101,6 @@ public void openConEditer(ActionEvent event) {
     	Stage addConStage = new Stage();
         addConStage.setScene(scene);
         addConStage.show();
-        ((Node)(event.getSource())).getScene().getWindow().hide();
     }
     catch (Exception e) {
         e.printStackTrace();
