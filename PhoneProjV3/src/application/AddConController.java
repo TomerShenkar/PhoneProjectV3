@@ -20,15 +20,14 @@ public class AddConController extends CVController{
 			String name = nameField.getText();
 			String number = numberField.getText();
 			sqld.insert(name, number);
+			
 			Stage stage = (Stage) accept.getScene().getWindow();
-		    // do what you have to do
 		    stage.close();
 		}
 	}
 	
 	public void cancel(ActionEvent event) {
 		Stage stage = (Stage) cancel.getScene().getWindow();
-	    // do what you have to do
 	    stage.close();
 	}
 }
