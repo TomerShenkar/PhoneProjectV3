@@ -91,7 +91,7 @@ public class MainController extends Main implements Initializable {
 	}
 
 	public void decline(ActionEvent event) { //This method ends the call
-		if(PhoneState == State.Ringing || PhoneState == State.DuringCall || PhoneState == State.Dialing || PhoneState == State.DialingFromContacts) {
+		if(PhoneState == State.Ringing || PhoneState == State.DuringCall || PhoneState == State.Dialing || PhoneState == State.DialingFromContacts || PhoneState == State.Idle) {
 			SH1.writeString("ATH", true);
 			phoneNum = "";
 			PhoneState = State.DeclinedCall;
@@ -117,7 +117,7 @@ public class MainController extends Main implements Initializable {
 	public void setTextAreaState(String incoming) { //This method displays any other messages needing display that aren't the number
 		
 		if(PhoneState == State.Idle) {
-			textArea.setText(""); //Clears the textArea
+			textArea.setText("End of call" + "\n"); //Clears the textArea
 		}
 		else if(PhoneState == State.TypingNumber) {
 			//Do nothing, this is setTextAreaNumber
@@ -140,6 +140,8 @@ public class MainController extends Main implements Initializable {
 		
 		else if(PhoneState == State.DeclinedCall) {
 			textArea.appendText("Call Ended" + "\n");
+			PhoneState = State.Idle;
+			setTextAreaState("It");
 		}
 		
 		else if(PhoneState == State.callPickedUp) {
