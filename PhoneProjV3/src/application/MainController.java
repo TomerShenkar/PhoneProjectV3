@@ -14,8 +14,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -43,6 +45,8 @@ public class MainController extends Main implements Initializable {
 	//FXML VERIABLES
 	@FXML public ComboBox<String> comboBox; //CommPort display comboBox
 	@FXML TextArea textArea; //Main text area
+	@FXML protected TextField textFieldSMS; //SMS texting area
+	@FXML CheckBox cb; //SMS textBox area
 	@FXML AnchorPane AP; //CV.fxml's AnchorPane
 	@FXML Button OpenPort; //OpenPort Button
 	
@@ -76,18 +80,49 @@ public class MainController extends Main implements Initializable {
 			setTextAreaNumber(phoneNum);
 		}
 	}
-
+	
+	public String getSMS() {
+		return textFieldSMS.getText();
+	}
+	
 	public void answer(ActionEvent event) { //This method sets the answer key functions 
-		if(PhoneState == State.TypingNumber) { //If TypingNumber = call the number
-			SH1.writeString("ATD" + phoneNum + ";", true);
-			PhoneState = State.Dialing;
-			setTextAreaState("Whatever");
+		String sms = getSMS();
+		if(cb.isSelected()) { //If the checkbox is selected, send a text
+			if(!sms.equals("")|| phoneNum != null || !phoneNum.equals("")) {
+				SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", true);
+				
+				try {
+					Thread.sleep(500); //Not the way, figure out a way to send it without sleep
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				if(!textFieldSMS.getText().equals("")) {
+					sms = textFieldSMS.getText(); 
+				}
+				else {
+					System.out.println("Error sending text");
+					return; //End the process
+				}
+				
+				SH1.writeString(sms, true);
+				byte[] endSMS = new byte[] {26};
+				SH1.writeByte(endSMS);
+				PhoneState = State.TypingMessage;
+				setTextAreaState("Whatever");
+			}
 		}
-		else if(PhoneState == State.Ringing) { //If the phone is ringing = answer the call;
-			SH1.writeString("ATA", true);
-			PhoneState = State.DuringCall;
-			setTextAreaState("Whatever");
-		}
+		else
+			if(PhoneState == State.TypingNumber) { //If TypingNumber = call the number
+				SH1.writeString("ATD" + phoneNum + ";", true);
+				PhoneState = State.Dialing;
+				setTextAreaState("Whatever");
+			}
+			else if(PhoneState == State.Ringing) { //If the phone is ringing = answer the call;
+				SH1.writeString("ATA", true);
+				PhoneState = State.DuringCall;
+				setTextAreaState("Whatever");
+			}
 	}
 
 	public void decline(ActionEvent event) { //This method ends the call
@@ -109,7 +144,7 @@ public class MainController extends Main implements Initializable {
 			}
 		}
 	}
-
+	
 	public void setTextAreaNumber(String s) { //This method displays the number being typed
 		textArea.setText(s);
 	}
@@ -123,7 +158,7 @@ public class MainController extends Main implements Initializable {
 			//Do nothing, this is setTextAreaNumber
 		}
 		else if(PhoneState == State.TypingMessage) {
-			//This is for later - will show message typing (or in a separate function
+			textArea.appendText("\n" + "Sending " + getSMS() + " to " + detectNum(phoneNum));
 		}
 		else if(PhoneState == State.Dialing) {
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum) + "\n");
