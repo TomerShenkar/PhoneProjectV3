@@ -11,7 +11,7 @@
    <children>
       <TextField fx:id="tf" layoutX="325.0" layoutY="75.0" />
       <Button layoutX="325.0" layoutY="141.0" mnemonicParsing="false" onAction="#placeCall" text="Call" />
-      <Button layoutX="367.0" layoutY="141.0" mnemonicParsing="false" text="Text" />
+      <Button fx:id="sendText" layoutX="367.0" layoutY="141.0" mnemonicParsing="false" onAction="#sendText" text="Text" />
       <Button fx:id="OpenConEditor" layoutX="412.0" layoutY="141.0" mnemonicParsing="false" onAction="#openConEditer" text="Edit" />
       <Button layoutX="458.0" layoutY="141.0" mnemonicParsing="false" onAction="#deleteCon" text="Delete" />
       <Button fx:id="OpenConCreator" layoutX="483.0" layoutY="75.0" mnemonicParsing="false" onAction="#openConAdder" text="New" />

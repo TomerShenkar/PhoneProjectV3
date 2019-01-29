@@ -45,7 +45,7 @@ public class MainController extends Main implements Initializable {
 	//FXML VERIABLES
 	@FXML public ComboBox<String> comboBox; //CommPort display comboBox
 	@FXML TextArea textArea; //Main text area
-	@FXML protected TextField textFieldSMS; //SMS texting area
+	@FXML TextField textFieldSMS; //SMS texting area
 	@FXML CheckBox cb; //SMS textBox area
 	@FXML AnchorPane AP; //CV.fxml's AnchorPane
 	@FXML Button OpenPort; //OpenPort Button
@@ -65,6 +65,7 @@ public class MainController extends Main implements Initializable {
 			}
 		comboBox.getItems().add(names[i]);
 		}
+		cb.setSelected(false);
 	}
 	
 	public void addKeytoString(ActionEvent event) { //This method extracts the number from the keypad and sends it to be added to the number string
@@ -81,39 +82,39 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 	
+	public void setCheckBoxState(Boolean bool) {
+		cb.setSelected(bool);
+	}
+	
 	public String getSMS() {
 		return textFieldSMS.getText();
 	}
 	
-	public void answer(ActionEvent event) { //This method sets the answer key functions 
+	public void placeText() {
 		String sms = getSMS();
-		if(cb.isSelected()) { //If the checkbox is selected, send a text
-			if(!sms.equals("")|| phoneNum != null || !phoneNum.equals("")) {
-				SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", true);
-				
-				try {
-					Thread.sleep(500); //Not the way, figure out a way to send it without sleep
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				
-				if(!textFieldSMS.getText().equals("")) {
-					sms = textFieldSMS.getText(); 
-				}
-				else {
-					System.out.println("Error sending text");
-					return; //End the process
-				}
-				
-				SH1.writeString(sms, true);
-				byte[] endSMS = new byte[] {26};
-				SH1.writeByte(endSMS);
-				PhoneState = State.TypingMessage;
-				setTextAreaState("Whatever");
+		if(!sms.equals("")|| phoneNum != null || !phoneNum.equals("")) {
+			SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", true);
+			
+			try {
+				Thread.sleep(500); //Not the way, figure out a way to send it without sleep
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
+			
+			SH1.writeString(sms, true);
+			byte[] endSMS = new byte[] {26};
+			SH1.writeByte(endSMS);
+			PhoneState = State.TypingMessage;
+			cb.setSelected(false);
+			setTextAreaState("Whatever");
 		}
-		else
-			if(PhoneState == State.TypingNumber) { //If TypingNumber = call the number
+	}
+	
+	public void answer(ActionEvent event) { //This method sets the answer key functions 
+		if(cb.isSelected()) { //If the checkbox is selected, send a text
+			placeText();
+		}
+		else if(PhoneState == State.TypingNumber) { //If TypingNumber = call the number
 				SH1.writeString("ATD" + phoneNum + ";", true);
 				PhoneState = State.Dialing;
 				setTextAreaState("Whatever");
@@ -273,7 +274,7 @@ public class MainController extends Main implements Initializable {
 				// Clock code
 			}
 			
-			else if(temp.startsWith("+TA:")) { //Only used for showing the dialed number when calling from ContactsView
+			else if(temp.startsWith("+CVCall:")) { //Only used for showing the dialed number when calling from ContactsView
 				String[] numberParts = temp.split(":");
 				Number = numberParts[1];
 				PhoneState = State.DialingFromContacts;
@@ -287,7 +288,17 @@ public class MainController extends Main implements Initializable {
 				nextIsMSG = true;
 				return ("Text from " + Number);
 			}
-
+			
+			else if (temp.startsWith("+CVText:")) { //Text from ContactsView
+				String[] tempParts = temp.split(":");
+				String[] numberParts = tempParts[1].split("\n");
+				phoneNum = numberParts[0].trim();
+				if(cb.isSelected()) {
+					setTextArea(phoneNum);
+					placeText();
+				}
+			}
+			
 			else {
 				// None of the above
 			}

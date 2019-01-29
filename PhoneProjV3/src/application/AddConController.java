@@ -20,7 +20,7 @@ public class AddConController extends CVController{
 			String name = nameField.getText();
 			String number = numberField.getText();
 			sqld.insert(name, number);
-			
+			reloadCmBox();
 			Stage stage = (Stage) accept.getScene().getWindow();
 		    stage.close();
 		}

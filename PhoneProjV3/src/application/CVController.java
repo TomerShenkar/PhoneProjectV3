@@ -27,8 +27,21 @@ public class CVController extends MainController{
 	@FXML Button SDTomer;
 	@FXML Button OpenConCreator;
 	@FXML Button OpenConEditor;
-
+	@FXML Button sendText;
+	
 	public void initialize(URL arg0, ResourceBundle arg1)  {
+		if(arr != null || arr.length > 0) {
+			for(int i = 0; i<arr.length; i++) {
+				cmBox.getItems().add(arr[i]);
+			}
+		}
+		
+	}
+	
+	public void reloadCmBox() {
+		cmBox.getItems().clear();
+		arr = sqld.selectAll();
+		
 		if(arr != null || arr.length > 0) {
 			for(int i = 0; i<arr.length; i++) {
 				cmBox.getItems().add(arr[i]);
@@ -54,9 +67,10 @@ public class CVController extends MainController{
 	
 	public void placeCall(ActionEvent event) {
 		if(number != null) {
-			String send = "+TA:" + number + "\n";
+			String send = "+CVCall:" + number + "\n";
 			sl.serialData(send.getBytes());
 			((Node)(event.getSource())).getScene().getWindow().hide();
+
 		}
 	}
 		
@@ -75,6 +89,18 @@ public class CVController extends MainController{
 	
 	public void displayTF(String s) { //S being the value you want to display
 		tf.setText(s);
+	}
+	
+	public void sendText(ActionEvent event) {
+		//Close this window, activate the SMS text field and set the receiver to be the chosen contact.
+		if(number != null) {
+			String send = "+CVText:" + number + "\n";
+			sl.serialData(send.getBytes());
+			((Node)(event.getSource())).getScene().getWindow().hide();
+
+			/*Stage stage = (Stage) sendText.getScene().getWindow();
+		    stage.close();*/
+		}
 	}
 	
 	public void openConAdder(ActionEvent event) {
