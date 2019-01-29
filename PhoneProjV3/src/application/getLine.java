@@ -6,7 +6,7 @@ import java.util.Queue;
 
 public class getLine {
 
-	public boolean linemode;
+	public boolean linemode; //If true, add up every character until /r. If false, every character that comes in is it's separate line 
 	private String Save;
 	Queue<String> q;
 	

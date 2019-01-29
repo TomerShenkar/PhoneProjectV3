@@ -93,20 +93,13 @@ public class MainController extends Main implements Initializable {
 	public void placeText() {
 		String sms = getSMS();
 		if(!sms.equals("")|| phoneNum != null || !phoneNum.equals("")) {
-			SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", true);
+			SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", false);
 			
-			try {
+			/*try {
 				Thread.sleep(500); //Not the way, figure out a way to send it without sleep
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
-			
-			SH1.writeString(sms, true);
-			byte[] endSMS = new byte[] {26};
-			SH1.writeByte(endSMS);
-			PhoneState = State.TypingMessage;
-			cb.setSelected(false);
-			setTextAreaState("Whatever");
+			}*/
 		}
 	}
 	
@@ -297,6 +290,16 @@ public class MainController extends Main implements Initializable {
 					setTextArea(phoneNum);
 					placeText();
 				}
+			}
+			
+			else if(temp.equals(">")) {
+				String sms = getSMS();
+				SH1.writeString(sms, true);
+				byte[] endSMS = new byte[] {26};
+				SH1.writeByte(endSMS);
+				PhoneState = State.TypingMessage;
+				cb.setSelected(false);
+				return("Whatever");
 			}
 			
 			else {

@@ -1,8 +1,10 @@
 package application;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,8 +22,7 @@ public class CVController extends MainController{
 	private String[] arr = sqld.selectAll();
 	private String number;
 	static String selectedName;
-	boolean isRefreshed = false;
-	
+
 	@FXML TextField tf;
 	@FXML ComboBox<String> cmBox = new ComboBox<String>(); //Used for contact display 
 	@FXML Button SDTomer;
@@ -41,18 +42,10 @@ public class CVController extends MainController{
 	public void reloadCmBox() {
 		cmBox.getItems().clear();
 		arr = sqld.selectAll();
-		
-		if(arr != null || arr.length > 0) {
-			for(int i = 0; i<arr.length; i++) {
-				cmBox.getItems().add(arr[i]);
-			}
-		}
+		cmBox.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
 	}
 	
 	public void pickContact(ActionEvent event) {
-		if(cmBox.getSelectionModel().getSelectedIndex() == -1) {
-			displayTF("Error");
-		}
 		String selectedString = arr[cmBox.getSelectionModel().getSelectedIndex()];
 		String[] conParts = selectedString.split("@");
 		String selectedConName = conParts[0];
@@ -83,8 +76,7 @@ public class CVController extends MainController{
 	
 	public void deleteCon(ActionEvent event) {
 		sqld.delete("Name", selectedName);
-		isRefreshed = true;
-		((Node)(event.getSource())).getScene().getWindow().hide();
+		//reloadCmBox();
 	}
 	
 	public void displayTF(String s) { //S being the value you want to display
