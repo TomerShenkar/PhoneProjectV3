@@ -23,9 +23,10 @@ public class getLine {
 	
 	public void addRaw(byte[] raw) {
 		for(int i = 0; i<raw.length; i++) {
-			Save = Save + (char)raw[i];
 			if(linemode = true) {
-				if(raw[i] == 10) { //Adding up characters until the \r
+				Save = Save + (char)raw[i];
+				if(raw[i] == 10) { //Adding up until the \r
+					//textArea_Debug.append(Save);
 					q.add(Save);
 					Save = "";
 				}

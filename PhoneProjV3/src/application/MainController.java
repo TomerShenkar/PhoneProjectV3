@@ -53,7 +53,7 @@ public class MainController extends Main implements Initializable {
 	//STATE VERIABLES
 	protected static State PhoneState = State.Idle; //Defying the phone state
 	protected static enum State { //Different phone states
-		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall, DialingFromContacts, IncomingMessage, IncomingMessageNumber;
+		Idle, TypingNumber, TypingMessage, Dialing, Ringing, DuringCall, DialingFromContacts, DeclinedCall, callPickedUp;
 	}
 	
 	@Override
@@ -93,6 +93,7 @@ public class MainController extends Main implements Initializable {
 	public void placeText() {
 		String sms = getSMS();
 		if(!sms.equals("")|| phoneNum != null || !phoneNum.equals("")) {
+			GetLine.linemode = false;
 			SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", false);
 			
 			/*try {
@@ -120,10 +121,10 @@ public class MainController extends Main implements Initializable {
 	}
 
 	public void decline(ActionEvent event) { //This method ends the call
-		if(PhoneState == State.Ringing || PhoneState == State.DuringCall || PhoneState == State.Dialing || PhoneState == State.DialingFromContacts) {
+		if(PhoneState == State.Ringing || PhoneState == State.DuringCall || PhoneState == State.Dialing || PhoneState == State.DialingFromContacts || PhoneState == State.Idle) {
 			SH1.writeString("ATH", true);
 			phoneNum = "";
-			PhoneState = State.Idle;
+			PhoneState = State.DeclinedCall;
 			setTextAreaState("Whatever");
 		}
 	}
@@ -144,38 +145,38 @@ public class MainController extends Main implements Initializable {
 	}
 	
 	public void setTextAreaState(String incoming) { //This method displays any other messages needing display that aren't the number
-		if(PhoneState == State.TypingNumber) {
+		
+		if(PhoneState == State.Idle) {
+			textArea.setText("End of call" + "\n"); //Clears the textArea
+		}
+		else if(PhoneState == State.TypingNumber) {
 			//Do nothing, this is setTextAreaNumber
 		}
-		
-		else if(PhoneState == State.IncomingMessageNumber) {
-			textArea.appendText("Incoming message from " + detectNum(incoming) + ": ");
-		}
-		
-		else if(PhoneState == State.IncomingMessage) {
-			textArea.appendText(incoming + "\n");
-		}
-		
 		else if(PhoneState == State.TypingMessage) {
-			textArea.appendText("Sending " + getSMS() + " to " + detectNum(phoneNum));
+			textArea.appendText("\n" + "Sending " + getSMS() + " to " + detectNum(phoneNum));
 		}
 		else if(PhoneState == State.Dialing) {
-			textArea.appendText("Calling " + detectNum(phoneNum) + "\n");
+			textArea.appendText("\n" + "Calling " + detectNum(phoneNum) + "\n");
 		}
 		else if(PhoneState == State.Ringing) {
-			textArea.appendText(detectNum(phoneNum) + " Is calling \n");
+			textArea.appendText(detectNum(Number) + " Is calling" + "\n");
 		}
-		
 		else if(PhoneState == State.DuringCall) {
 			textArea.appendText("In call with " + detectNum(Number) + "\n");
 		}
 		else if(PhoneState == State.DialingFromContacts) {
-			textArea.appendText("Calling from contacts to " + detectNum(Number.trim()) + "\n");
+			textArea.appendText("\n" + "Calling from contacts to " + detectNum(Number.trim()) + "\n");
 		}
 		
-		else if(PhoneState == State.Idle) {
+		else if(PhoneState == State.DeclinedCall) {
 			textArea.appendText("Call Ended" + "\n");
-			
+			PhoneState = State.Idle;
+			setTextAreaState("It");
+		}
+		
+		else if(PhoneState == State.callPickedUp) {
+			textArea.appendText(incoming + "\n");
+			PhoneState = State.DuringCall;
 		}
 		
 		/*Platform.runLater(new Runnable() {
@@ -201,8 +202,8 @@ public class MainController extends Main implements Initializable {
 	public String processMSG(String MSG) { //This method turns a +9725... number into a 05... number 
 		String[] MSGParts = MSG.split("\"");
 		String NumberInternational = MSGParts[1];
-		String NumberInterParts = NumberInternational.substring(4);
-		String Number = "0" + NumberInterParts;
+		String[] NumberInterParts = NumberInternational.split("+972");
+		String Number = "0" + NumberInterParts[1];
 		return Number;
 	}
 	
@@ -222,35 +223,41 @@ public class MainController extends Main implements Initializable {
 	}
 	
 	private String Sim900Parse(String temp) { //This method parses the incoming command and displays it in readable format
-		if (temp != null) { 
-			if (nextIsMSG) { //Text related
-				PhoneState = State.IncomingMessage;
+		if (temp != null) { //Text related
+			if (nextIsMSG) {
 				nextIsMSG = false;
-				return (temp);
+				return ("The message is " + temp);
 			}
 
 			else if (temp.startsWith("RING")) { //Phone Ringing related
-					PhoneState = State.Ringing;
-					return ("Ringing");
+				//if (isRing == false) {
+					//isRing = true;
+					return ("Ringing " + detectNum(Number));
+				//}
 			}
 			
 			else if (temp.startsWith("+CLIP:")) { //Phone Ringing related
+				//if (isClip == false) {
 					String[] parts = temp.split("\"");
 					Number = parts[1];
 					PhoneState = State.Ringing;
+					//isClip = true;
 					return ("Call from " + detectNum(Number));
+				//}
 			}
 			
 			else if(temp.startsWith("+COLP:")) { //Phone call related
 				//Only when this phone is calling - Doesn't work for declined call from client 
 				String[] parts = temp.split("\"");
 				String Number = parts[1];
-				PhoneState = State.DuringCall;
+				PhoneState = State.callPickedUp;
 				return ("In call with " + detectNum(Number));
 			}
 			
 			else if (temp.startsWith("NO CARRIER")) { //End of call related
-				PhoneState = State.Idle;
+				PhoneState = State.DeclinedCall;
+				isRing = false;
+				isClip = false;
 				return ("End of call");
 			}
 
@@ -264,14 +271,13 @@ public class MainController extends Main implements Initializable {
 				PhoneState = State.DialingFromContacts;
 				String s = "ATD" + Number.trim() + ";";
 				SH1.writeString(s, true);
-				return("Calling to " + detectNum(Number.trim()));
+				return("Calling (from contacts) to " + detectNum(Number.trim()));
 			}
 			
 			else if (temp.startsWith("+CMT:")) { //Text related
 				String Number = processMSG(temp);
-				PhoneState = State.IncomingMessageNumber;
 				nextIsMSG = true;
-				return (Number);
+				return ("Text from " + Number);
 			}
 			
 			else if (temp.startsWith("+CVText:")) { //Text from ContactsView
@@ -284,7 +290,8 @@ public class MainController extends Main implements Initializable {
 				}
 			}
 			
-			else if(temp.startsWith(">")) { //Text related
+			else if(temp.startsWith(">")) {
+				GetLine.linemode = true;
 				String sms = getSMS();
 				SH1.writeString(sms, true);
 				byte[] endSMS = new byte[] {26};
@@ -304,14 +311,13 @@ public class MainController extends Main implements Initializable {
 	public void openPort(ActionEvent event) { //This method opens the port and sets the listener for incoming commands
 		//if (SH1.portOpener(comboBox.getSelectionModel().getSelectedIndex())) { 
 		if (SH1.portOpener(activePort)) {
-			SH1.writeString("ATE0", true	);
 			SH1.setListener(sl);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
 				@Override
 				protected Boolean doInBackground() throws Exception {
 					int x = 10;
 					while (x < 1000) {
-						Thread.sleep(75);
+						Thread.sleep(100);
 						if (!Addition.isEmpty()) {
 							GetLine.addRaw(Addition.remove());
 						}
