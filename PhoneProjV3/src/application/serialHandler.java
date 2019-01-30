@@ -40,11 +40,6 @@ public class serialHandler {
 						      {
 						    	  byte [] slice = Arrays.copyOfRange(newData, 0, numRead);
 						    	  sl.serialData(slice);
-						    	  //System.out.print(new String(slice));
-						    	//  Iterator listeners = _listeners.iterator();
-						        //  while( listeners.hasNext() ) {
-						        // ((SerialListener) listeners.next() ).dataReceived(slice  );
-						         // }
 						      }			    	  
 					      }
 					   }

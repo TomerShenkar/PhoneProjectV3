@@ -25,8 +25,7 @@ public class getLine {
 		for(int i = 0; i<raw.length; i++) {
 			Save = Save + (char)raw[i];
 			if(linemode = true) {
-				if(raw[i] == 10) { //Adding up until the \r
-					//textArea_Debug.append(Save);
+				if(raw[i] == 10) { //Adding up characters until the \r
 					q.add(Save);
 					Save = "";
 				}
