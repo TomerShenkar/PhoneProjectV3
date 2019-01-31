@@ -167,7 +167,7 @@ public class MainController extends Main implements Initializable {
 			textArea.appendText("\n" + "Sending " + textFieldSMS.getText() + " to " + detectNum(phoneNum));
 		}
 		else if(phoneState == State.dialing) {
-			textArea.appendText("\n" + "Calling " + detectNum(phoneNum));
+			textArea.appendText("\n" + "Calling " + detectNum(incomingNumber));
 		}
 		else if(phoneState == State.ringing) {
 			textArea.appendText("\n" + detectNum((incomingNumber)) + " is calling");
@@ -304,7 +304,11 @@ public class MainController extends Main implements Initializable {
 				cb.setSelected(true);
 				setTextArea(phoneNum);
 			}
-
+			
+			else if(temp.startsWith("ERROR")) {
+				setTextArea("Error");
+			}
+			
 			else if(temp.startsWith("+CCLK:")) { // Clock related
 				// Clock code
 			}
