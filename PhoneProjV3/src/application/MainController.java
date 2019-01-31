@@ -22,44 +22,46 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainController extends Main implements Initializable {
-	//CLASS VERIABLES
+	// CLASS VERIABLES
 	protected static serialListener sl = new collectSerialData();
 	private SQLiteD sql = new SQLiteD();
 	getLine GetLine = new getLine();
 
-	//PORT VERIABLES
+	// PORT VERIABLES
 	String[] names = SH1.listOfPorts();
 	int activePort = -1;
 	static Queue<String> Addition = new LinkedList<String>();
 	ObservableList<String> list;
 
-	//INCOMING MESSAGE/CALL VERIABLES
-	//	boolean isRing = false; //Made in order to disable multiple prints of same message
-	//	boolean isClip = false; //Made in order to disable multiple prints of same message
-	boolean nextIsMSG = false; //Made in order to allow print of incoming message
+	// INCOMING MESSAGE/CALL VERIABLES
+	// boolean isRing = false; //Made in order to disable multiple prints of same
+	// message
+	// boolean isClip = false; //Made in order to disable multiple prints of same
+	// message
+	boolean nextIsMSG = false; // Made in order to allow print of incoming message
 
-	//NUMBER VERIABLES
-	String phoneNum = ""; //Typed number
-	String incomingNumber; //Incoming caller's number
+	// NUMBER VERIABLES
+	String phoneNum = ""; // Typed number
+	String incomingNumber; // Incoming caller's number
 
-	//FXML VERIABLES
-	@ FXML public ComboBox<String> comboBox; //CommPort display comboBox
-	@ FXML TextArea textArea; //Main text area
-	@ FXML TextField textFieldSMS; //SMS texting area
-	@ FXML CheckBox cb; //SMS textBox area
-	@ FXML AnchorPane AP; //CV.fxml's AnchorPane
-	@ FXML Button OpenPort; //OpenPort Button
+	// FXML VERIABLES
+	@ FXML public ComboBox<String> comboBox; // CommPort display comboBox
+	@ FXML TextArea textArea; // Main text area
+	@ FXML TextField textFieldSMS; // SMS texting area
+	@ FXML CheckBox cb; // SMS textBox area
+	@ FXML AnchorPane AP; // CV.fxml's AnchorPane
+	@ FXML Button OpenPort; // OpenPort Button
 
-	//STATE VERIABLES
-	protected static State phoneState = State.idle; //Defying the phone state
+	// STATE VERIABLES
+	protected static State phoneState = State.idle; // Defying the phone state
 
-	protected static enum State { //Different phone states
+	protected static enum State { // Different phone states
 		idle, typingNumber, typingMessage, dialing, ringing, duringCall, dialingFromContacts, incomingMessage,
 		incomingMessageNumber;
 	}
 
 	@ Override
-	public void initialize(URL arg0, ResourceBundle arg1) { //This method adds port names to the combo box
+	public void initialize(URL arg0, ResourceBundle arg1) { // This method adds port names to the combo box
 		for (int i = 0; i < names.length; i++) {
 			if(names[i].startsWith("Sil")) {
 				activePort = i;
@@ -70,13 +72,14 @@ public class MainController extends Main implements Initializable {
 		cb.setSelected(false);
 	}
 
-	public void addKeytoString(ActionEvent event) { //This method extracts the number from the keypad and sends it to be added to the number string
+	public void addKeytoString(ActionEvent event) { // This method extracts the number from the keypad and sends it to
+													// be added to the number string
 		String number = ((Button) (event.getSource())).getText();
 		phoneState = State.typingNumber;
 		setNum(number);
 	}
 
-	public void setNum(String s) { //This method adds the keypad's clicked key to the number string
+	public void setNum(String s) { // This method adds the keypad's clicked key to the number string
 		// System.out.println(phoneNum);
 		if(s != null) {
 			phoneNum = phoneNum + s;
@@ -92,30 +95,41 @@ public class MainController extends Main implements Initializable {
 		String sms = textFieldSMS.getText();
 		if(!sms.equals("") || phoneNum != null || !phoneNum.equals("")) {
 			GetLine.linemode = false;
-			SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", false);
+			SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", true);
 
-			/* try { Thread.sleep(500); //Not the way, figure out a way to send it without
-			 * sleep } catch (InterruptedException e) { e.printStackTrace(); } */
+			/*-
+			 * try { 
+			 Thread.sleep(500); //Not the way, figure out a way to send it without
+			} 
+			catch (InterruptedException e) { 
+			 e.printStackTrace(); 
+			} 
+			GetLine.linemode = true;
+			SH1.writeString(sms, true);
+			byte[] endSMS = new byte[] { 26 };
+			SH1.writeByte(endSMS);
+			phoneState = State.typingMessage;
+			cb.setSelected(false);*/
 		}
 	}
 
-	public void answer(ActionEvent event) { //This method sets the answer key functions 
-		if(cb.isSelected()) { //If the checkbox is selected, send a text
+	public void answer(ActionEvent event) { // This method sets the answer key functions
+		if(cb.isSelected()) { // If the checkbox is selected, send a text
 			placeText();
 		}
-		else if(phoneState == State.typingNumber) { //If TypingNumber = call the number
+		else if(phoneState == State.typingNumber) { // If TypingNumber = call the number
 			SH1.writeString("ATD" + phoneNum + ";", true);
 			phoneState = State.dialing;
 			setTextAreaState("Whatever");
 		}
-		else if(phoneState == State.ringing) { //If the phone is ringing = answer the call;
+		else if(phoneState == State.ringing) { // If the phone is ringing = answer the call;
 			SH1.writeString("ATA", true);
 			phoneState = State.duringCall;
 			setTextAreaState("Whatever");
 		}
 	}
 
-	public void decline(ActionEvent event) { //This method ends the call
+	public void decline(ActionEvent event) { // This method ends the call
 		if(phoneState == State.ringing || phoneState == State.duringCall || phoneState == State.dialing
 				|| phoneState == State.dialingFromContacts || phoneState == State.idle) {
 			SH1.writeString("ATH", true);
@@ -125,7 +139,7 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 
-	public void clrKey(ActionEvent event) { //This method clears the last number that is in the number string
+	public void clrKey(ActionEvent event) { // This method clears the last number that is in the number string
 		if(phoneNum.length() > 0) {
 			phoneNum = phoneNum.substring(0, phoneNum.length() - 1);
 			setTextAreaNumber(phoneNum);
@@ -136,17 +150,18 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 
-	public void setTextAreaNumber(String s) { //This method displays the number being typed
+	public void setTextAreaNumber(String s) { // This method displays the number being typed
 		textArea.setText(s);
 	}
 
-	public void setTextAreaState(String incoming) { //This method displays any other messages needing display that aren't the number
+	public void setTextAreaState(String incoming) { // This method displays any other messages needing display that
+													// aren't the number
 
 		if(phoneState == State.idle) {
-			textArea.setText("End of call" + "\n"); //Clears the textArea
+			textArea.setText("End of call" + "\n"); // Clears the textArea
 		}
 		else if(phoneState == State.typingNumber) {
-			//Do nothing, this is setTextAreaNumber
+			// Do nothing, this is setTextAreaNumber
 		}
 		else if(phoneState == State.typingMessage) {
 			textArea.appendText("\n" + "Sending " + textFieldSMS.getText() + " to " + detectNum(phoneNum));
@@ -169,16 +184,21 @@ public class MainController extends Main implements Initializable {
 		else if(phoneState == State.incomingMessage) {
 			textArea.appendText(incoming);
 		}
-		/* Platform.runLater(new Runnable() { public void run() {
-		 * textArea.appendText(incoming); } }); */
+		/*
+		 * Platform.runLater(new Runnable() { 
+		 * public void run() {
+		 * textArea.appendText(incoming); } 
+		 * });
+		 */
 
 	}
 
-	public void setTextArea(String display) { //This method displays any other messages needing display that aren't the number
+	public void setTextArea(String display) { // This method displays any other messages needing display that aren't the
+												// number
 		textArea.appendText("\n" + display + "\n");
 	}
 
-	private String detectNum(String temp) { //This method searches a specific number in the SQLite database 
+	private String detectNum(String temp) { // This method searches a specific number in the SQLite database
 		String returnVal = sql.searchName(temp);
 		if(returnVal == null) {
 			returnVal = temp;
@@ -186,7 +206,7 @@ public class MainController extends Main implements Initializable {
 		return returnVal;
 	}
 
-	public String processMSG(String MSG) { //This method turns a +9725... number into a 05... number 
+	public String processMSG(String MSG) { // This method turns a +9725... number into a 05... number
 		String[] MSGParts = MSG.split("\"");
 		String NumberInternational = MSGParts[1];
 		String NumberInterParts = NumberInternational.substring(4);
@@ -194,7 +214,7 @@ public class MainController extends Main implements Initializable {
 		return Number;
 	}
 
-	public void openContacts(ActionEvent event) { //This method opens the CV.fxml window
+	public void openContacts(ActionEvent event) { // This method opens the CV.fxml window
 		try {
 			FXMLLoader fxmlloader = new FXMLLoader(getClass().getResource("/application/CV.fxml"));
 			Parent root = (Parent) fxmlloader.load();
@@ -209,72 +229,51 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 
-	private String Sim900Parse(String temp) { //This method parses the incoming command and displays it in readable format
-		if(temp != null) { //Text related
+	private String Sim900Parse(String temp) { // This method parses the incoming command and displays it in readable
+												// format
+		if(temp != null) { // Text related
 			if(nextIsMSG) {
 				nextIsMSG = false;
 				phoneState = State.incomingMessage;
-				return (temp); //temp is the message.
+				return (temp); // temp is the message.
 			}
 
-			else if(temp.startsWith("RING")) { //Phone Ringing related
-				//if (isRing == false) {
-				//isRing = true;
+			else if(temp.startsWith("RING")) { // Phone Ringing related
+				// if (isRing == false) {
+				// isRing = true;
 				return ("Ringing " + detectNum(incomingNumber));
-				//}
+				// }
 			}
 
-			else if(temp.startsWith("+CLIP:")) { //Phone Ringing related
-				//if (isClip == false) {
+			else if(temp.startsWith("+CLIP:")) { // Phone Ringing related
+				// if (isClip == false) {
 				String[] parts = temp.split("\"");
 				incomingNumber = parts[1];
 				phoneState = State.ringing;
-				//isClip = true;
+				// isClip = true;
 				return ("Call from " + detectNum(incomingNumber));
-				//}
+				// }
 			}
 
-			else if(temp.startsWith("+COLP:")) { //Phone call related
-				//Only when this phone is calling - Doesn't work for declined call from client 
+			else if(temp.startsWith("+COLP:")) { // Phone call related
+				// Only when this phone is calling - Doesn't work for declined call from client
 				String[] parts = temp.split("\"");
 				incomingNumber = parts[1];
 				phoneState = State.duringCall;
 				return ("In call with " + detectNum(incomingNumber));
 			}
 
-			else if(temp.startsWith("NO CARRIER")) { //End of call related
+			else if(temp.startsWith("NO CARRIER")) { // End of call related
 				phoneState = State.idle;
 				/* isRing = false; isClip = false; */
 				return ("End of call");
 			}
 
-			else if(temp.startsWith("+CCLK:")) { //Clock related
-				// Clock code
-			}
-
-			else if(temp.startsWith("+CVCall:")) { //Only used for showing the dialed number when calling from ContactsView
-				String[] numberParts = temp.split(":");
-				phoneNum = numberParts[1];
-				phoneState = State.dialingFromContacts;
-				String s = "ATD" + phoneNum.trim() + ";";
-				SH1.writeString(s, true);
-				return ("Calling " + detectNum(phoneNum.trim()));
-			}
-
-			else if(temp.startsWith("+CMT:")) { //Text related
+			else if(temp.startsWith("+CMT:")) { // Text related
 				incomingNumber = processMSG(temp);
 				nextIsMSG = true;
 				phoneState = State.incomingMessageNumber;
 				return (incomingNumber);
-			}
-
-			else if(temp.startsWith("+CVText:")) { //Text from ContactsView
-				String[] tempParts = temp.split(":");
-				String[] numberParts = tempParts[1].split("\n");
-				phoneNum = numberParts[0].trim();
-				if(cb.isSelected()) {
-					setTextArea(phoneNum);
-				}
 			}
 
 			else if(temp.startsWith(">")) {
@@ -288,6 +287,28 @@ public class MainController extends Main implements Initializable {
 				return ("Whatever");
 			}
 
+			else if(temp.startsWith("+CVCall:")) { // Only used for showing the dialed number when calling from
+													// ContactsView
+				String[] numberParts = temp.split(":");
+				phoneNum = numberParts[1];
+				phoneState = State.dialingFromContacts;
+				String s = "ATD" + phoneNum.trim() + ";";
+				SH1.writeString(s, true);
+				return ("Calling " + detectNum(phoneNum.trim()));
+			}
+
+			else if(temp.startsWith("+CVText:")) { // Text from ContactsView
+				String[] tempParts = temp.split(":");
+				String[] numberParts = tempParts[1].split("\n");
+				phoneNum = numberParts[0].trim();
+				cb.setSelected(true);
+				setTextArea(phoneNum);
+			}
+
+			else if(temp.startsWith("+CCLK:")) { // Clock related
+				// Clock code
+			}
+
 			else {
 				// None of the above
 			}
@@ -295,8 +316,8 @@ public class MainController extends Main implements Initializable {
 		return "";
 	}
 
-	public void openPort(ActionEvent event) { //This method opens the port and sets the listener for incoming commands
-		//if (SH1.portOpener(comboBox.getSelectionModel().getSelectedIndex())) { 
+	public void openPort(ActionEvent event) { // This method opens the port and sets the listener for incoming commands
+		// if (SH1.portOpener(comboBox.getSelectionModel().getSelectedIndex())) {
 		if(SH1.portOpener(activePort)) {
 			SH1.setListener(sl);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
@@ -308,11 +329,11 @@ public class MainController extends Main implements Initializable {
 						if(!Addition.isEmpty()) {
 							GetLine.addRaw(Addition.remove());
 						}
-						while (!GetLine.getQ().isEmpty()) { //Emptying the queue.
+						while (!GetLine.getQ().isEmpty()) { // Emptying the queue.
 							String temp = GetLine.getNext();
 							System.out.println(temp);
-							//Sim900Parse(temp);
-							publish(Sim900Parse(temp)); //Complete line should be here
+							// Sim900Parse(temp);
+							publish(Sim900Parse(temp)); // Complete line should be here
 						}
 					}
 					return true;

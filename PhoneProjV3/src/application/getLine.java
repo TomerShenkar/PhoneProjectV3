@@ -23,7 +23,7 @@ public class getLine {
 	
 	public void addRaw(byte[] raw) {
 		for(int i = 0; i<raw.length; i++) {
-			if(linemode = true) {
+			if(linemode == true) {
 				Save = Save + (char)raw[i];
 				if(raw[i] == 10) { //Adding up until the \r
 					//textArea_Debug.append(Save);
