@@ -10,30 +10,30 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <children>
-      <Button layoutX="122.0" layoutY="157.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="1" />
-      <Button layoutX="175.0" layoutY="157.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="2" />
-      <Button layoutX="228.0" layoutY="157.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="3" />
-      <Button layoutX="122.0" layoutY="210.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="4" />
-      <Button layoutX="175.0" layoutY="210.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="5" />
-      <Button layoutX="228.0" layoutY="210.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="6" />
-      <Button layoutX="122.0" layoutY="263.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="7" />
-      <Button layoutX="175.0" layoutY="263.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="8" />
-      <Button layoutX="228.0" layoutY="263.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="9" />
-      <Button layoutX="122.0" layoutY="316.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="*" />
-      <Button layoutX="175.0" layoutY="316.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="0" />
-      <Button layoutX="228.0" layoutY="316.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="#" />
-      <Button layoutX="65.0" layoutY="157.0" mnemonicParsing="false" onAction="#answer" prefHeight="50.0" prefWidth="50.0" text="A" />
-      <Button layoutX="286.0" layoutY="157.0" mnemonicParsing="false" onAction="#decline" prefHeight="50.0" prefWidth="50.0" text="D" />
+      <Button layoutX="117.0" layoutY="258.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="1" />
+      <Button layoutX="170.0" layoutY="258.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="2" />
+      <Button layoutX="223.0" layoutY="258.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="3" />
+      <Button layoutX="117.0" layoutY="311.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="4" />
+      <Button layoutX="170.0" layoutY="311.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="5" />
+      <Button layoutX="223.0" layoutY="311.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="6" />
+      <Button layoutX="117.0" layoutY="364.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="7" />
+      <Button layoutX="170.0" layoutY="364.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="8" />
+      <Button layoutX="223.0" layoutY="364.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="9" />
+      <Button layoutX="117.0" layoutY="417.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="*" />
+      <Button layoutX="170.0" layoutY="417.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="0" />
+      <Button layoutX="223.0" layoutY="417.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="#" />
+      <Button layoutX="60.0" layoutY="258.0" mnemonicParsing="false" onAction="#answer" prefHeight="50.0" prefWidth="50.0" text="A" />
+      <Button layoutX="281.0" layoutY="258.0" mnemonicParsing="false" onAction="#decline" prefHeight="50.0" prefWidth="50.0" text="D" />
       <ComboBox fx:id="comboBox" layoutX="236.0" layoutY="14.0" prefWidth="150.0" />
       <Button fx:id="OpenPort" layoutX="195.0" layoutY="14.0" mnemonicParsing="false" onAction="#openPort" text="OP" />
-      <Button layoutX="175.0" layoutY="369.0" mnemonicParsing="false" onAction="#clrKey" prefHeight="50.0" prefWidth="50.0" text="CLR" />
-      <ScrollPane hbarPolicy="NEVER" layoutX="75.0" layoutY="50.0" prefHeight="100.0" prefWidth="250.0">
+      <Button layoutX="170.0" layoutY="470.0" mnemonicParsing="false" onAction="#clrKey" prefHeight="50.0" prefWidth="50.0" text="CLR" />
+      <ScrollPane hbarPolicy="NEVER" layoutX="75.0" layoutY="50.0" prefHeight="201.0" prefWidth="250.0">
          <content>
-            <TextArea fx:id="textArea" prefHeight="100.0" prefWidth="250.0" />
+            <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="250.0" />
          </content>
       </ScrollPane>
       <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#openContacts" text="Contacts" />
-      <TextField fx:id="textFieldSMS" layoutX="90.0" layoutY="460.0" />
-      <CheckBox fx:id="cb" layoutX="253.0" layoutY="464.0" mnemonicParsing="false" text="Text" />
+      <TextField fx:id="textFieldSMS" layoutX="85.0" layoutY="561.0" />
+      <CheckBox fx:id="cb" layoutX="248.0" layoutY="565.0" mnemonicParsing="false" text="Text" />
    </children>
 </AnchorPane>
