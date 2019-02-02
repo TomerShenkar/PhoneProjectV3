@@ -50,8 +50,10 @@ public class MainController extends Main implements Initializable {
 	@ FXML TextField textFieldSMS; // SMS texting area
 	@ FXML CheckBox cb; // SMS textBox area
 	@ FXML AnchorPane AP; // CV.fxml's AnchorPane
-	@ FXML Button OpenPort; // OpenPort Button
-
+	@ FXML Button openPort; // OpenPort Button
+	@ FXML Button answerButton; //Answer Button
+	@ FXML Button declineButton; //Decline Button
+	
 	// STATE VERIABLES
 	protected static State phoneState = State.idle; // Defying the phone state
 
@@ -59,7 +61,7 @@ public class MainController extends Main implements Initializable {
 		idle, typingNumber, typingMessage, dialing, ringing, duringCall, dialingFromContacts, incomingMessage,
 		incomingMessageNumber;
 	}
-
+	
 	@ Override
 	public void initialize(URL arg0, ResourceBundle arg1) { // This method adds port names to the combo box
 		for (int i = 0; i < names.length; i++) {
@@ -70,6 +72,9 @@ public class MainController extends Main implements Initializable {
 			comboBox.getItems().add(names[i]);
 		}
 		cb.setSelected(false);
+		/*Image imageDecline = new Image(getClass().getResourceAsStream("endcall.png"));
+		declineButton.setGraphic(new ImageView(imageDecline));
+		Image imageAnswer = new Image(getClass().getResourceAsStream("answercall.png"));*/
 	}
 
 	public void addKeytoString(ActionEvent event) { // This method extracts the number from the keypad and sends it to
@@ -193,8 +198,7 @@ public class MainController extends Main implements Initializable {
 
 	}
 
-	public void setTextArea(String display) { // This method displays any other messages needing display that aren't the
-												// number
+	public void setTextArea(String display) { // This method displays any other messages needing display that aren't the number
 		textArea.appendText("\n" + display + "\n");
 	}
 
@@ -206,6 +210,11 @@ public class MainController extends Main implements Initializable {
 		return returnVal;
 	}
 
+	public void clearTA(ActionEvent evevt) {
+		phoneNum = "";
+		textArea.setText("");
+	}
+	
 	public String processMSG(String MSG) { // This method turns a +9725... number into a 05... number
 		String[] MSGParts = MSG.split("\"");
 		String NumberInternational = MSGParts[1];
@@ -228,7 +237,7 @@ public class MainController extends Main implements Initializable {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private String Sim900Parse(String temp) { // This method parses the incoming command and displays it in readable
 												// format
 		if(temp != null) { // Text related
@@ -309,6 +318,10 @@ public class MainController extends Main implements Initializable {
 				setTextArea("Error");
 			}
 			
+			else if(temp.startsWith("+CMGS")) {
+				setTextArea("Message received");
+			}
+			
 			else if(temp.startsWith("+CCLK:")) { // Clock related
 				// Clock code
 			}
@@ -363,7 +376,7 @@ public class MainController extends Main implements Initializable {
 			};
 			worker.execute();
 			boolean disable = true; // Setting OpenPort button to be disabled from the command did not work.
-			OpenPort.setDisable(disable);
+			openPort.setDisable(disable);
 		}
 	}
 }

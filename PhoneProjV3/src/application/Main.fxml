@@ -6,6 +6,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
@@ -22,18 +24,29 @@
       <Button layoutX="117.0" layoutY="417.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="*" />
       <Button layoutX="170.0" layoutY="417.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="0" />
       <Button layoutX="223.0" layoutY="417.0" mnemonicParsing="false" onAction="#addKeytoString" prefHeight="50.0" prefWidth="50.0" text="#" />
-      <Button layoutX="60.0" layoutY="258.0" mnemonicParsing="false" onAction="#answer" prefHeight="50.0" prefWidth="50.0" text="A" />
-      <Button layoutX="281.0" layoutY="258.0" mnemonicParsing="false" onAction="#decline" prefHeight="50.0" prefWidth="50.0" text="D" />
+      <Button fx:id="answerButton" layoutX="60.0" layoutY="258.0" mnemonicParsing="false" onAction="#answer" prefHeight="50.0" prefWidth="50.0" />
+      <Button layoutX="281.0" layoutY="258.0" mnemonicParsing="false" onAction="#decline" prefHeight="50.0" prefWidth="50.0" />
       <ComboBox fx:id="comboBox" layoutX="236.0" layoutY="14.0" prefWidth="150.0" />
-      <Button fx:id="OpenPort" layoutX="195.0" layoutY="14.0" mnemonicParsing="false" onAction="#openPort" text="OP" />
+      <Button fx:id="openPort" layoutX="195.0" layoutY="14.0" mnemonicParsing="false" onAction="#openPort" text="OP" />
       <Button layoutX="170.0" layoutY="470.0" mnemonicParsing="false" onAction="#clrKey" prefHeight="50.0" prefWidth="50.0" text="CLR" />
-      <ScrollPane layoutX="75.0" layoutY="50.0" prefHeight="201.0" prefWidth="250.0">
+      <ScrollPane layoutX="59.0" layoutY="50.0" prefHeight="201.0" prefWidth="273.0">
          <content>
-            <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="250.0" />
+            <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="266.0" />
          </content>
       </ScrollPane>
       <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#openContacts" text="Contacts" />
       <TextField fx:id="textFieldSMS" layoutX="85.0" layoutY="561.0" />
-      <CheckBox fx:id="cb" layoutX="248.0" layoutY="565.0" mnemonicParsing="false" text="Text" />
+      <CheckBox fx:id="cb" layoutX="251.0" layoutY="565.0" mnemonicParsing="false" text="Text" />
+      <ImageView fitHeight="255.0" fitWidth="25.0" layoutX="73.0" layoutY="272.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Data/startcall.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="225.0" fitWidth="25.0" layoutX="294.0" layoutY="271.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Data/endcall.png" />
+         </image>
+      </ImageView>
+      <Button layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#clearTA" text="--&gt;" />
    </children>
 </AnchorPane>

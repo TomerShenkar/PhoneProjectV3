@@ -65,6 +65,7 @@ public class serialHandler {
 	
 	public void portCloser() {
 		if(chosenPort != null) {
+			writeString("ATH", true);
 			chosenPort.closePort();
 		}
 	}

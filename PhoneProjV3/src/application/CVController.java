@@ -13,7 +13,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class CVController extends MainController{
@@ -36,16 +38,19 @@ public class CVController extends MainController{
 				cmBox.getItems().add(arr[i]);
 			}
 		}
-		
 	}
 	
-	public void reloadCmBox() {
+	public void reloadCmBox(ActionEvent event) {
 		cmBox.getItems().clear();
 		arr = sqld.selectAll();
 		cmBox.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
+		cmBox.getSelectionModel().selectFirst();
 	}
 	
 	public void pickContact(ActionEvent event) {
+		if(cmBox.getSelectionModel().getSelectedIndex() == -1) {
+			return;
+		}
 		String selectedString = arr[cmBox.getSelectionModel().getSelectedIndex()];
 		String[] conParts = selectedString.split("@");
 		String selectedConName = conParts[0];

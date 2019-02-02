@@ -12,17 +12,29 @@ public class EditConController extends CVController{
 	@FXML TextField numberField;
 	@FXML Button accept;
 	@FXML Button cancel;
+	
 	private SQLiteD sqld = new SQLiteD();
 	private CVController cvc = new CVController();
 	
 	public void editCon(ActionEvent event) {
 		String searchName = cvc.getSelectedName();
-		//System.out.println(searchName);
 		if(nameField != null || numberField != null || searchName == "" || searchName == null) {
 			String newName = nameField.getText();
 			String newNumber = numberField.getText();
-			sqld.update("Name", newName, "Name", searchName);
-			sqld.update("Number", newNumber, "Name", searchName);
+			
+			if(newName.equals("") || newName == null){
+				sqld.update("Number", newNumber, "Name", searchName);
+				Stage stage = (Stage) cancel.getScene().getWindow();
+			    stage.close();
+			}
+			else if(newNumber.equals("") || newNumber == null){
+				sqld.update("Name", newName, "Name", searchName);
+				Stage stage = (Stage) cancel.getScene().getWindow();
+			    stage.close();
+			}
+			else
+				sqld.update("Name", newName, "Name", searchName);
+				sqld.update("Number", newNumber, "Name", searchName);
 			Stage stage = (Stage) cancel.getScene().getWindow();
 		    stage.close();
 		}

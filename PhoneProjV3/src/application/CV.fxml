@@ -15,7 +15,7 @@
       <Button fx:id="OpenConEditor" layoutX="412.0" layoutY="141.0" mnemonicParsing="false" onAction="#openConEditer" text="Edit" />
       <Button layoutX="458.0" layoutY="141.0" mnemonicParsing="false" onAction="#deleteCon" text="Delete" />
       <Button fx:id="OpenConCreator" layoutX="483.0" layoutY="75.0" mnemonicParsing="false" onAction="#openConAdder" text="New" />
-      <ComboBox fx:id="cmBox" layoutX="77.0" layoutY="73.0" onAction="#pickContact" prefHeight="28.0" prefWidth="223.0" />
+      <ComboBox fx:id="cmBox" layoutX="93.0" layoutY="74.0" onAction="#pickContact" prefHeight="28.0" prefWidth="223.0" />
       <Label layoutX="231.0" layoutY="20.0" prefHeight="28.0" prefWidth="149.0" text="Contacts View">
          <font>
             <Font size="20.0" />
