@@ -34,10 +34,8 @@ public class MainController extends Main implements Initializable {
 	ObservableList<String> list;
 
 	// INCOMING MESSAGE/CALL VERIABLES
-	// boolean isRing = false; //Made in order to disable multiple prints of same
-	// message
-	// boolean isClip = false; //Made in order to disable multiple prints of same
-	// message
+	boolean isRing = false; //Made in order to disable multiple prints of same message
+	boolean isClip = false; //Made in order to disable multiple prints of same message
 	boolean nextIsMSG = false; // Made in order to allow print of incoming message
 
 	// NUMBER VERIABLES
@@ -248,20 +246,20 @@ public class MainController extends Main implements Initializable {
 			}
 
 			else if(temp.startsWith("RING")) { // Phone Ringing related
-				// if (isRing == false) {
-				// isRing = true;
+				if (isRing == false) {
+				isRing = true;
 				return ("Ringing " + detectNum(incomingNumber));
-				// }
+				}
 			}
 
 			else if(temp.startsWith("+CLIP:")) { // Phone Ringing related
-				// if (isClip == false) {
+				if (isClip == false) {
 				String[] parts = temp.split("\"");
 				incomingNumber = parts[1];
 				phoneState = State.ringing;
-				// isClip = true;
+				isClip = true;
 				return ("Call from " + detectNum(incomingNumber));
-				// }
+				}
 			}
 
 			else if(temp.startsWith("+COLP:")) { // Phone call related
@@ -274,7 +272,8 @@ public class MainController extends Main implements Initializable {
 
 			else if(temp.startsWith("NO CARRIER")) { // End of call related
 				phoneState = State.idle;
-				/* isRing = false; isClip = false; */
+				isRing = false;
+				isClip = false; 
 				return ("End of call");
 			}
 
