@@ -187,13 +187,6 @@ public class MainController extends Main implements Initializable {
 		else if(phoneState == State.incomingMessage) {
 			textArea.appendText(incoming);
 		}
-		/*
-		 * Platform.runLater(new Runnable() { 
-		 * public void run() {
-		 * textArea.appendText(incoming); } 
-		 * });
-		 */
-
 	}
 
 	public void setTextArea(String display) { // This method displays any other messages needing display that aren't the number

@@ -9,6 +9,7 @@ public class serialHandler {
 	private String[] portNames;
 	private static SerialPort chosenPort = null;
 	private serialListener sl;
+	private boolean isOpen = false;
 	
 	public serialHandler() {
 		this.serialPorts = SerialPort.getCommPorts();
@@ -26,6 +27,7 @@ public class serialHandler {
 		if(index<= serialPorts.length + 1 && index > -1) {
 			chosenPort = serialPorts[index];
 			if(chosenPort.openPort()) {
+				isOpen = true;
 				chosenPort.addDataListener(new SerialPortDataListener() {
 					   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
 					   public void serialEvent(SerialPortEvent event)
@@ -71,10 +73,12 @@ public class serialHandler {
 	}
 	
 	public void writeString(String msg, boolean cReturn) {
-		byte[] bytemsg = msg.getBytes();
-		chosenPort.writeBytes(bytemsg, bytemsg.length);
-		if(cReturn) {
-			chosenPort.writeBytes(new byte[] {13}, 1);
+		if(isOpen) {
+			byte[] bytemsg = msg.getBytes();
+			chosenPort.writeBytes(bytemsg, bytemsg.length);
+			if(cReturn) {
+				chosenPort.writeBytes(new byte[] {13}, 1);
+			}
 		}
 	}
 	
