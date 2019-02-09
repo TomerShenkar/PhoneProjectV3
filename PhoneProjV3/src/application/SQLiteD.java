@@ -53,7 +53,7 @@ public class SQLiteD {
     }
 	
     public String searchName(String searchParam){ //This method searches the name attached to a number given in the main controller 
-        String sql = "SELECT * FROM con Where Number Like " + "'" + searchParam + "%'";
+        String sql = "SELECT * FROM con Where Number = " + "'" + searchParam + "'";
         //String sql = "SELECT * FROM con Where " + searchColumn + " = " +  searchParam;
         
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)){
@@ -66,7 +66,7 @@ public class SQLiteD {
         } catch (SQLException e) {
               System.out.println(e.getMessage());
           }
-        return null;
+        return searchParam;
       }
     
     public String searchSpecific(String searchColumn1, String searchColumn2, String searchParam){ //searchColumn1/2 being Name/Number, searchParam being the search keyword	

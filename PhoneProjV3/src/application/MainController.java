@@ -166,22 +166,22 @@ public class MainController extends Main implements Initializable {
 		else if(phoneState == State.typingNumber) {
 			// Do nothing, this is setTextAreaNumber
 		}
-		else if(phoneState == State.typingMessage) {
+		else if(phoneState == State.typingMessage) { //Outgoing text
 			textArea.appendText("\n" + "Sending " + textFieldSMS.getText() + " to " + detectNum(phoneNum));
 		}
-		else if(phoneState == State.dialing) {
-			textArea.appendText("\n" + "Calling " + detectNum(incomingNumber));
+		else if(phoneState == State.dialing) { //Outgoing call
+			textArea.appendText("\n" + "Calling " + detectNum(phoneNum));
 		}
-		else if(phoneState == State.ringing) {
+		else if(phoneState == State.ringing) { //Incoming call
 			textArea.appendText("\n" + detectNum((incomingNumber)) + " is calling");
 		}
-		else if(phoneState == State.duringCall) {
+		else if(phoneState == State.duringCall) { //Incoming call
 			textArea.appendText("\n" + "In call with " + detectNum(incomingNumber));
 		}
-		else if(phoneState == State.dialingFromContacts) {
+		else if(phoneState == State.dialingFromContacts) { //Outgoing call
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim()));
 		}
-		else if(phoneState == State.incomingMessageNumber) {
+		else if(phoneState == State.incomingMessageNumber) { //Incoming text
 			textArea.appendText("\n" + "Message from " + detectNum(incomingNumber) + ": ");
 		}
 		else if(phoneState == State.incomingMessage) {
@@ -194,11 +194,7 @@ public class MainController extends Main implements Initializable {
 	}
 
 	private String detectNum(String temp) { // This method searches a specific number in the SQLite database
-		String returnVal = sql.searchName(temp);
-		if(returnVal == null) {
-			returnVal = temp;
-		}
-		return returnVal;
+		return sql.searchName(temp);
 	}
 
 	public void clearTA(ActionEvent evevt) {
