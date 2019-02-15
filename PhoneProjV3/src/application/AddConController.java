@@ -16,7 +16,7 @@ public class AddConController extends CVController{
 	private SQLiteD sqld = new SQLiteD();
 	
 	public void addContact(ActionEvent event) {
-		if(nameField != null || numberField !=null) {
+		if(nameField != null || numberField != null) {
 			String name = nameField.getText();
 			String number = numberField.getText();
 			sqld.insert(name, number);

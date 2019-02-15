@@ -3,7 +3,8 @@ package application;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -29,20 +31,39 @@ public class CVController extends MainController{
 	@FXML Button OpenConCreator;
 	@FXML Button OpenConEditor;
 	@FXML Button sendText;
+    @FXML ListView<String> lw = new ListView<String>();
 	
 	public void initialize(URL arg0, ResourceBundle arg1)  {
 		if(arr != null || arr.length > 0) {
 			for(int i = 0; i<arr.length; i++) {
 				cmBox.getItems().add(arr[i]);
+				lw.getItems().add(arr[i]);
 			}
 		}
+		
+		lw.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if(newValue != null) {
+		            String[] conParts = newValue.split("@");
+		            String selectedConName = conParts[0];
+		            number = conParts[1];
+		            selectedName = selectedConName;
+		            displayTF(selectedName);
+		        }
+			}	
+		});
 	}
 	
-	public void reloadCmBox(ActionEvent event) {
+	public void reloadCmBox() {
 		cmBox.getItems().clear();
 		arr = sqld.selectAll();
 		cmBox.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
-		cmBox.getSelectionModel().selectFirst();
+		//cmBox.getSelectionModel().selectFirst();
+		
+		lw.getItems().clear();
+		lw.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
+		//cmBox.getSelectionModel().selectFirst();
 	}
 	
 	public void pickContact(ActionEvent event) {
@@ -79,7 +100,7 @@ public class CVController extends MainController{
 	
 	public void deleteCon(ActionEvent event) {
 		sqld.delete("Name", selectedName);
-		//reloadCmBox();
+		reloadCmBox();
 	}
 	
 	public void displayTF(String s) { //S being the value you want to display
