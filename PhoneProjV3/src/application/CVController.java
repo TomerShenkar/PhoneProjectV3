@@ -13,7 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+//import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -26,7 +26,7 @@ public class CVController extends MainController{
 	static String selectedName;
 
 	@FXML TextField tf;
-	@FXML ComboBox<String> cmBox = new ComboBox<String>(); //Used for contact display 
+	//@FXML ComboBox<String> cmBox = new ComboBox<String>(); //Used for contact display 
 	@FXML Button SDTomer;
 	@FXML Button OpenConCreator;
 	@FXML Button OpenConEditor;
@@ -36,7 +36,7 @@ public class CVController extends MainController{
 	public void initialize(URL arg0, ResourceBundle arg1)  {
 		if(arr != null || arr.length > 0) {
 			for(int i = 0; i<arr.length; i++) {
-				cmBox.getItems().add(arr[i]);
+				//cmBox.getItems().add(arr[i]);
 				lw.getItems().add(arr[i]);
 			}
 		}
@@ -56,17 +56,19 @@ public class CVController extends MainController{
 	}
 	
 	public void reloadCmBox() {
-		cmBox.getItems().clear();
+		// Nir has been here
+		//cmBox.getItems().clear();
 		arr = sqld.selectAll();
-		cmBox.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
+		//cmBox.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
 		//cmBox.getSelectionModel().selectFirst();
 		
 		lw.getItems().clear();
 		lw.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
+		tf.setText("");
 		//cmBox.getSelectionModel().selectFirst();
 	}
 	
-	public void pickContact(ActionEvent event) {
+	/*public void pickContact(ActionEvent event) {
 		if(cmBox.getSelectionModel().getSelectedIndex() == -1) {
 			return;
 		}
@@ -76,7 +78,7 @@ public class CVController extends MainController{
 		number = conParts[1];
 		selectedName = selectedConName;
 		displayTF(selectedName);
-	}
+	}*/
 	
 	public String getSelectedName() {
 		return selectedName;
