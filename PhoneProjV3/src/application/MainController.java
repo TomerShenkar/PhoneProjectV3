@@ -34,8 +34,8 @@ public class MainController extends Main implements Initializable {
 	ObservableList<String> list;
 
 	// INCOMING MESSAGE/CALL VERIABLES
-	boolean isRing = false; //Made in order to disable multiple prints of same message
-	boolean isClip = false; //Made in order to disable multiple prints of same message
+	boolean isRing = false; // Made in order to disable multiple prints of same message
+	boolean isClip = false; // Made in order to disable multiple prints of same message
 	boolean nextIsMSG = false; // Made in order to allow print of incoming message
 
 	// NUMBER VERIABLES
@@ -49,9 +49,9 @@ public class MainController extends Main implements Initializable {
 	@ FXML CheckBox cb; // SMS textBox area
 	@ FXML AnchorPane AP; // CV.fxml's AnchorPane
 	@ FXML Button openPort; // OpenPort Button
-	@ FXML Button answerButton; //Answer Button
-	@ FXML Button declineButton; //Decline Button
-	
+	@ FXML Button answerButton; // Answer Button
+	@ FXML Button declineButton; // Decline Button
+
 	// STATE VERIABLES
 	protected static State phoneState = State.idle; // Defying the phone state
 
@@ -59,7 +59,7 @@ public class MainController extends Main implements Initializable {
 		idle, typingNumber, typingMessage, dialing, ringing, duringCall, dialingFromContacts, incomingMessage,
 		incomingMessageNumber, busy;
 	}
-	
+
 	@ Override
 	public void initialize(URL arg0, ResourceBundle arg1) { // This method adds port names to the combo box
 		for (int i = 0; i < names.length; i++) {
@@ -70,9 +70,12 @@ public class MainController extends Main implements Initializable {
 			comboBox.getItems().add(names[i]);
 		}
 		cb.setSelected(false);
-		/*Image imageDecline = new Image(getClass().getResourceAsStream("endcall.png"));
-		declineButton.setGraphic(new ImageView(imageDecline));
-		Image imageAnswer = new Image(getClass().getResourceAsStream("answercall.png"));*/
+		/*
+		 * Image imageDecline = new
+		 * Image(getClass().getResourceAsStream("endcall.png"));
+		 * declineButton.setGraphic(new ImageView(imageDecline)); Image imageAnswer =
+		 * new Image(getClass().getResourceAsStream("answercall.png"));
+		 */
 	}
 
 	public void addKeytoString(ActionEvent event) { // This method extracts the number from the keypad and sends it to
@@ -89,7 +92,7 @@ public class MainController extends Main implements Initializable {
 			setTextAreaNumber(phoneNum);
 		}
 	}
-	
+
 	public void placeText() {
 		String sms = textFieldSMS.getText();
 		if(!sms.equals("") || phoneNum != null || !phoneNum.equals("")) {
@@ -120,6 +123,8 @@ public class MainController extends Main implements Initializable {
 			SH1.writeString("ATH", true);
 			phoneNum = "";
 			phoneState = State.idle;
+			isRing = false;
+			isClip = false;
 			setTextAreaState("Whatever");
 		}
 	}
@@ -143,31 +148,31 @@ public class MainController extends Main implements Initializable {
 													// aren't the number
 
 		if(phoneState == State.idle) {
-			textArea.clear();
+			textArea.setText("");
 		}
 		else if(phoneState == State.typingNumber) {
 			// Do nothing, this is setTextAreaNumber
 		}
-		else if(phoneState == State.typingMessage) { //Outgoing text
+		else if(phoneState == State.typingMessage) { // Outgoing text
 			textArea.appendText("\n" + "Sending " + textFieldSMS.getText() + " to " + detectNum(phoneNum));
 		}
-		else if(phoneState == State.dialing) { //Outgoing call
+		else if(phoneState == State.dialing) { // Outgoing call
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum));
 		}
-		else if(phoneState == State.ringing) { //Incoming call
+		else if(phoneState == State.ringing) { // Incoming call
 			textArea.appendText("\n" + detectNum((incomingNumber)) + " is calling");
 		}
-		else if(phoneState == State.duringCall) { //Incoming call
+		else if(phoneState == State.duringCall) { // Incoming call
 			textArea.appendText("\n" + "In call with " + detectNum(incomingNumber));
 			phoneNum = "";
 		}
-		else if(phoneState == State.busy) { //Incoming call
+		else if(phoneState == State.busy) { // Incoming call
 			textArea.appendText("\n" + "Busy");
 		}
-		else if(phoneState == State.dialingFromContacts) { //Outgoing call
+		else if(phoneState == State.dialingFromContacts) { // Outgoing call
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim()));
 		}
-		else if(phoneState == State.incomingMessageNumber) { //Incoming text
+		else if(phoneState == State.incomingMessageNumber) { // Incoming text
 			textArea.appendText("\n" + "Message from " + detectNum(incomingNumber) + ": ");
 		}
 		else if(phoneState == State.incomingMessage) {
@@ -175,7 +180,8 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 
-	public void setTextArea(String display) { // This method displays any other messages needing display that aren't the number
+	public void setTextArea(String display) { // This method displays any other messages needing display that aren't the
+												// number
 		textArea.appendText("\n" + display + "\n");
 	}
 
@@ -185,9 +191,9 @@ public class MainController extends Main implements Initializable {
 
 	public void clearTA(ActionEvent evevt) {
 		phoneNum = "";
-		textArea.clear();
+		textArea.setText("");
 	}
-	
+
 	public String processMSG(String MSG) { // This method turns a +9725... number into a 05... number
 		String[] MSGParts = MSG.split("\"");
 		String NumberInternational = MSGParts[1];
@@ -210,7 +216,7 @@ public class MainController extends Main implements Initializable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private String Sim900Parse(String temp) { // This method parses the incoming command and displays it in readable
 												// format
 		if(temp != null) { // Text related
@@ -221,19 +227,19 @@ public class MainController extends Main implements Initializable {
 			}
 
 			else if(temp.startsWith("RING")) { // Phone Ringing related
-				if (isRing == false) {
-				isRing = true;
-				return ("Ringing " + detectNum(incomingNumber));
+				if(isRing == false) {
+					isRing = true;
+					return ("Ringing " + detectNum(incomingNumber));
 				}
 			}
 
 			else if(temp.startsWith("+CLIP:")) { // Phone Ringing related
-				if (isClip == false) {
-				String[] parts = temp.split("\"");
-				incomingNumber = parts[1];
-				phoneState = State.ringing;
-				isClip = true;
-				return ("Call from " + detectNum(incomingNumber));
+				if(isClip == false) {
+					String[] parts = temp.split("\"");
+					incomingNumber = parts[1];
+					phoneState = State.ringing;
+					isClip = true;
+					return ("Call from " + detectNum(incomingNumber));
 				}
 			}
 
@@ -248,7 +254,7 @@ public class MainController extends Main implements Initializable {
 			else if(temp.startsWith("NO CARRIER")) { // End of call related
 				phoneState = State.idle;
 				isRing = false;
-				isClip = false; 
+				isClip = false;
 				return ("End of call");
 			}
 
@@ -287,21 +293,21 @@ public class MainController extends Main implements Initializable {
 				cb.setSelected(true);
 				setTextArea(phoneNum);
 			}
-			
+
 			else if(temp.startsWith("BUSY")) {
 				phoneState = State.busy;
 			}
-			
+
 			else if(temp.startsWith("ERROR")) {
 				setTextArea("Error");
 			}
-			
+
 			else if(temp.startsWith("+CMGS")) {
 				textFieldSMS.clear();
 				phoneNum = "";
 				setTextArea("Message received");
 			}
-			
+
 			else if(temp.startsWith("+CCLK:")) { // Clock related
 				// Clock code
 			}
@@ -314,7 +320,6 @@ public class MainController extends Main implements Initializable {
 	}
 
 	public void openPort(ActionEvent event) { // This method opens the port and sets the listener for incoming commands
-		// if (SH1.portOpener(comboBox.getSelectionModel().getSelectedIndex())) {
 		if(SH1.portOpener(activePort)) {
 			SH1.setListener(sl);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
