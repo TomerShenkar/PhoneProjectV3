@@ -57,7 +57,7 @@ public class MainController extends Main implements Initializable {
 
 	protected static enum State { // Different phone states
 		idle, typingNumber, typingMessage, dialing, ringing, duringCall, dialingFromContacts, incomingMessage,
-		incomingMessageNumber;
+		incomingMessageNumber, busy;
 	}
 	
 	@ Override
@@ -89,30 +89,12 @@ public class MainController extends Main implements Initializable {
 			setTextAreaNumber(phoneNum);
 		}
 	}
-
-	public void setCheckBoxState(Boolean bool) {
-		cb.setSelected(bool);
-	}
-
+	
 	public void placeText() {
 		String sms = textFieldSMS.getText();
 		if(!sms.equals("") || phoneNum != null || !phoneNum.equals("")) {
 			GetLine.linemode = false;
 			SH1.writeString("AT+CMGS=" + "\"" + phoneNum + "\"", true);
-
-			/*-
-			 * try { 
-			 Thread.sleep(500); //Not the way, figure out a way to send it without
-			} 
-			catch (InterruptedException e) { 
-			 e.printStackTrace(); 
-			} 
-			GetLine.linemode = true;
-			SH1.writeString(sms, true);
-			byte[] endSMS = new byte[] { 26 };
-			SH1.writeByte(endSMS);
-			phoneState = State.typingMessage;
-			cb.setSelected(false);*/
 		}
 	}
 
@@ -161,7 +143,7 @@ public class MainController extends Main implements Initializable {
 													// aren't the number
 
 		if(phoneState == State.idle) {
-			textArea.setText("End of call" + "\n"); // Clears the textArea
+			textArea.appendText("\n" + "End of call"); // Clears the textArea
 		}
 		else if(phoneState == State.typingNumber) {
 			// Do nothing, this is setTextAreaNumber
@@ -177,6 +159,9 @@ public class MainController extends Main implements Initializable {
 		}
 		else if(phoneState == State.duringCall) { //Incoming call
 			textArea.appendText("\n" + "In call with " + detectNum(incomingNumber));
+		}
+		else if(phoneState == State.busy) { //Incoming call
+			textArea.appendText("\n" + "Busy");
 		}
 		else if(phoneState == State.dialingFromContacts) { //Outgoing call
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim()));
@@ -199,7 +184,7 @@ public class MainController extends Main implements Initializable {
 
 	public void clearTA(ActionEvent evevt) {
 		phoneNum = "";
-		textArea.setText("");
+		textArea.clear();
 	}
 	
 	public String processMSG(String MSG) { // This method turns a +9725... number into a 05... number
@@ -302,11 +287,16 @@ public class MainController extends Main implements Initializable {
 				setTextArea(phoneNum);
 			}
 			
+			else if(temp.startsWith("BUSY")) {
+				phoneState = State.busy;
+			}
+			
 			else if(temp.startsWith("ERROR")) {
 				setTextArea("Error");
 			}
 			
 			else if(temp.startsWith("+CMGS")) {
+				textFieldSMS.clear();
 				setTextArea("Message received");
 			}
 			
