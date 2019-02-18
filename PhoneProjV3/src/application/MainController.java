@@ -143,7 +143,7 @@ public class MainController extends Main implements Initializable {
 													// aren't the number
 
 		if(phoneState == State.idle) {
-			textArea.appendText("\n" + "End of call"); // Clears the textArea
+			textArea.clear();
 		}
 		else if(phoneState == State.typingNumber) {
 			// Do nothing, this is setTextAreaNumber
@@ -159,6 +159,7 @@ public class MainController extends Main implements Initializable {
 		}
 		else if(phoneState == State.duringCall) { //Incoming call
 			textArea.appendText("\n" + "In call with " + detectNum(incomingNumber));
+			phoneNum = "";
 		}
 		else if(phoneState == State.busy) { //Incoming call
 			textArea.appendText("\n" + "Busy");
@@ -297,6 +298,7 @@ public class MainController extends Main implements Initializable {
 			
 			else if(temp.startsWith("+CMGS")) {
 				textFieldSMS.clear();
+				phoneNum = "";
 				setTextArea("Message received");
 			}
 			
