@@ -5,86 +5,72 @@ import java.util.ArrayList;
 
 public class SQLiteD {
 	private Connection connect() {
+		/*
+		 * This method connects to the SQL database.
+		 * The database is stored in the Data folder in the project. 
+		 */
 		String url = "jdbc:sqlite:src/Data/PH";
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
-            //System.out.println("Successful connection");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+          e.printStackTrace();
         }
         return conn;	
 	}
 	
     public String[] selectAll(){ 
+    	/*
+    	 * This method return the entire table.
+    	 * The method uses the same connection from the method connect, a statement (the SQL command)
+    	 * and a ResultSet that stores the results retrieved from the statement. 
+    	 */
         String sql = "SELECT * FROM con";
         
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)){
-            // loop through the result set
-        	ArrayList<String> names = new ArrayList<String>();
-
+            ArrayList<String> names = new ArrayList<String>();
         	while (rs.next()) {
-        	    names.add(rs.getString("Name") + "@" + rs.getString("Number") + " ");
+        	    names.add(rs.getString("Name") + ": " + rs.getString("Number") + " ");
         	}
-
-        	// finally turn the array lists into arrays - if really needed
+        	
         	String[] resArray = new String[names.size()];
         	resArray = names.toArray(resArray);
-        	
         	return resArray;
+        	
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        	e.printStackTrace();
         }
         return null;
     }
 	
-    public void getNameOrNumber(String searchParam){ //searchParam being Name/Number
-        String sql = "SELECT " + searchParam + " FROM con";
-        
-        try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)){
-            
-            // loop through the result set
-            while (rs.next()) {
-                System.out.println(rs.getString(searchParam));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-	
-    public String searchName(String searchParam){ //This method searches the name attached to a number given in the main controller 
+    public String searchName(String searchParam){
+    	/*
+    	 * This method searches a specific name from the table, when given the number. 
+    	 * Used to detect numbers and assign contacts to them.
+    	 * Works the same way as the general search, 
+    	 * only this returns one specific result and doesn't use am array to hold all the results.
+    	 */
         String sql = "SELECT * FROM con Where Number = " + "'" + searchParam + "'";
-        //String sql = "SELECT * FROM con Where " + searchColumn + " = " +  searchParam;
         
         try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)){
-            
-            // loop through the result set
             while (rs.next()) {
             	return rs.getString("Name");
             }
             
         } catch (SQLException e) {
-              System.out.println(e.getMessage());
+        	e.printStackTrace();
           }
+        
         return searchParam;
       }
     
-    public String searchSpecific(String searchColumn1, String searchColumn2, String searchParam){ //searchColumn1/2 being Name/Number, searchParam being the search keyword	
-      String sql = "SELECT " + searchColumn1 +" FROM con WHERE " + searchColumn2 + " Like " + "'" + searchParam + "%'";
-      //SELECT Number FROM con WHERE Name = 'Tomer'; ---> 0546951919
-      try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)){
-          
-          // loop through the result set
-          while (rs.next()) {
-              return(rs.getString(searchColumn1));
-          }
-      } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-      return null;
-    }
-    
     public void insert(String insName, String insNumber) {
+    	/*
+    	 * This method inserts new values into the database.
+    	 * This method used the prepared statement method, which allows easy 
+    	 * insertion of values into the string. 
+    	 * The prepared statement then executes the statement with the values inside. 
+    	 */
         String sql = "INSERT INTO con(Name, Number) VALUES(?,?);";
  
         try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {

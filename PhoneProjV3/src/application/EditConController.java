@@ -8,16 +8,21 @@ import javafx.stage.Stage;
 
 public class EditConController extends CVController{
 	
-	@FXML TextField nameField;
-	@FXML TextField numberField;
-	@FXML Button accept;
-	@FXML Button cancel;
+	@FXML TextField nameField, numberField;
+	@FXML Button accept, cancel;
 	
 	private SQLiteD sqld = new SQLiteD();
-	private CVController cvc = new CVController();
 	
 	public void editCon(ActionEvent event) {
-		String searchName = cvc.getSelectedName();
+		/*
+		 * This method works in the following way, only if the accept key is pressed:
+		 * First, the searchName needed for the SQL edit is retrieved.
+		 * Then, the values from the textFields are retrieved.
+		 * If there's only a name, only that name will be updated, and same goes for number.
+		 * If both are changes, both values will be updated.
+		 * After the update occurs, the window is closed.
+		 */
+		String searchName = selectedName;
 		if(nameField != null || numberField != null || searchName == "" || searchName == null) {
 			String newName = nameField.getText();
 			String newNumber = numberField.getText();
@@ -41,6 +46,9 @@ public class EditConController extends CVController{
 	}
 	
 	public void cancel(ActionEvent event) {
+		/*
+		 * If the cancel key is pressed, the window closes with no action happening.
+		 */
 		Stage stage = (Stage) cancel.getScene().getWindow();
 	    stage.close();
 	}

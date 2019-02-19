@@ -13,6 +13,9 @@ public class Main extends Application {
 	
 	serialHandler SH1 = new serialHandler();	
 	public void start(Stage primaryStage) {
+		/*
+		 * This the first method called when launching the app. Sets the scene.
+		 */
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/application/Main.fxml"));
 			Scene scene = new Scene(root);

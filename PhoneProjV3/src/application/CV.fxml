@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="535.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.CVController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="535.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.CVController">
    <children>
       <TextField fx:id="tf" layoutX="325.0" layoutY="75.0" />
       <Button layoutX="325.0" layoutY="141.0" mnemonicParsing="false" onAction="#placeCall" text="Call" />
@@ -20,13 +20,7 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <Button fx:id="SDTomer" layoutX="449.0" layoutY="205.0" mnemonicParsing="false" onAction="#speedDial" text="Tomer" />
-      <Label layoutX="436.0" layoutY="175.0" text="Speed Dial">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Button layoutX="46.0" layoutY="75.0" mnemonicParsing="false" onAction="#reloadCmBox" text="R" />
+      <Button layoutX="46.0" layoutY="75.0" mnemonicParsing="false" onAction="#reloadListView" text="R" />
       <ListView fx:id="lw" layoutX="84.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" />
    </children>
 </AnchorPane>
