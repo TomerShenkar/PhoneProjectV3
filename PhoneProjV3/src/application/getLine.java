@@ -10,6 +10,11 @@ public class getLine {
 	private String Save;
 	Queue<String> q;
 	
+	/**
+	 * This method is the constructor for getLine.
+	 * @param None
+	 * @return None
+	 */
 	public getLine() {
 		/*
 		 * Constructor for getLine
@@ -19,23 +24,27 @@ public class getLine {
 		q = new LinkedList<>();
 	}
 	
+	/**
+	 * This method takes a string and adds it to the byte array being checked.
+	 * @param s
+	 * @return None
+	 */
 	public void addRaw(String s) {
-		/*
-		 * This method takes a string and adds it to the byte array being checked.
-		 */
 		byte[] sarr = s.getBytes();
 		addRaw(sarr);
 	}
 	
+	/**
+	 * This is where data coming from collectSerialData
+	 * is added into command lines separated by a character feed (\r or 10 in bytes),
+	 * which are then added into the queue.
+	 * If the variable "linemode" is true, the command lines will be separated at the character feed.
+	 * If it's set to false, every character that comes in is being added to the queue
+	 * to be proccesed at the main controller.   
+	 * @param raw
+	 * @return None
+	 */
 	public void addRaw(byte[] raw) {
-		/*
-		 * This is where data coming from collectSerialData
-		 * is added into command lines separated by a character feed (\r or 10 in bytes),
-		 * which are then added into the queue.
-		 * If the variable "linemode" is true, the command lines will be separated at the character feed.
-		 * If it's set to false, every character that comes in is being added to the queue
-		 * to be proccesed at the main controller.   
-		 */
 		for(int i = 0; i<raw.length; i++) {
 			if(linemode == true) {
 				Save = Save + (char)raw[i];
@@ -53,17 +62,21 @@ public class getLine {
 		} 
 	}
 	
+	/**
+	 * This method is used to return the Queue 
+	 * @param None
+	 * @return q
+	 */
 	public Queue<String> getQ(){
-		/*
-		 * This method is used to return the queue.
-		 */
 		return q;
 	}
 	
+	/**
+	 * This method is used to return the top value from the queue.
+	 * @param None
+	 * @return q.poll();
+	 */
 	public String getNext() {
-		/*
-		 * This method is used to return the latest value from the queue.
-		 */
 		return q.poll();
 	}
 }

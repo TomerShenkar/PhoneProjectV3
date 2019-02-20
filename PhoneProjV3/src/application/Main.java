@@ -11,11 +11,12 @@ import javafx.scene.Scene;
 
 public class Main extends Application {
 	
-	serialHandler SH1 = new serialHandler();	
+	serialHandler SH1 = new serialHandler();
+	
+	/**
+	 * This method starts up the primaryStage. It loads the fisrst window.
+	 */
 	public void start(Stage primaryStage) {
-		/*
-		 * This the first method called when launching the app. Sets the scene.
-		 */
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/application/Main.fxml"));
 			Scene scene = new Scene(root);
