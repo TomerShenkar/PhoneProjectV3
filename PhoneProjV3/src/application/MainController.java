@@ -282,6 +282,7 @@ public class MainController extends Main implements Initializable {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			Stage CVstage = new Stage();
+			CVstage.setTitle("Contacts View");
 			CVstage.setScene(scene);
 			CVstage.show();
 		}

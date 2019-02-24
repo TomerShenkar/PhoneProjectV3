@@ -1,5 +1,8 @@
 package application;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,6 +15,16 @@ public class EditConController extends CVController{
 	@FXML Button accept, cancel;
 	
 	private SQLiteD sqld = new SQLiteD();
+	
+	@ Override
+	/**
+	 * This method is first called when this window starts.
+	 * Used to load the edited names into the textFields. 
+	 */
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		nameField.setText(selectedName);
+		numberField.setText(number);
+	}
 	
 	/**
 	 * This method works in the following way, only if the accept key is pressed:

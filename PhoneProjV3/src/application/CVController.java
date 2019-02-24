@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 public class CVController extends MainController{
 	private SQLiteD sqld = new SQLiteD();
 	private String[] arr = sqld.selectAll();
-	private String number;
+	static String number;
 	static String selectedName;
 
 	@FXML TextField tf;
@@ -127,6 +127,7 @@ public class CVController extends MainController{
 	        Scene scene = new Scene(root);
 	        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	    	Stage addConStage = new Stage();
+	    	addConStage.setTitle("Add New Contact");
 	        addConStage.setScene(scene);
 	        addConStage.show();
         }
@@ -150,6 +151,7 @@ public class CVController extends MainController{
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			Stage addConStage = new Stage();
+	    	addConStage.setTitle("Edit Contact");
         	addConStage.setScene(scene);
         	addConStage.show();
 		}

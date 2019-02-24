@@ -1,5 +1,7 @@
 package application;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -7,10 +9,21 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class AddConController extends CVController{
-	@FXML TextField nameField, numberField;
-	@FXML Button accept, cancel;
-	
+	@FXML TextField nameField;
+	@FXML TextField numberField;
+	@FXML Button accept;
+	@FXML Button cancel;
 	private SQLiteD sqld = new SQLiteD();
+	@ Override
+	/**
+	 * This method is first called when this window starts.
+	 * Used to load the edited names into the textFields. 
+	 */
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		nameField.setPromptText("Enter Name");
+		numberField.setPromptText("Enter Number");
+	}
+	
 	
 	/**
 	 * If the accept button has been pressed, the method takes the text from the different text fields 
