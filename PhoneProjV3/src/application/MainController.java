@@ -39,7 +39,7 @@ public class MainController extends Main implements Initializable {
 	boolean nextIsMSG = false; // Made in order to allow print of incoming message
 
 	// NUMBER VERIABLES
-	String phoneNum = ""; // Typed number
+	String phoneNum = ""; // Outgoing number
 	String incomingNumber; // Incoming caller's number
 
 	// FXML VERIABLES
@@ -235,7 +235,7 @@ public class MainController extends Main implements Initializable {
 	 * @return None
 	 */
 	public void setTextArea(String display) { 
-		textArea.appendText("\n" + display + "\n");
+		textArea.appendText("\n" + display);
 	}
 	
 	/**
@@ -345,7 +345,7 @@ public class MainController extends Main implements Initializable {
 				phoneState = State.idle;
 				isRing = false;
 				isClip = false;
-				return ("End of call");
+				return ("NO CARRIER");
 			}
 
 			else if(cParse.startsWith("+CMT:")) { 
@@ -363,7 +363,7 @@ public class MainController extends Main implements Initializable {
 				SH1.writeByte(endSMS);
 				phoneState = State.typingMessage;
 				cb.setSelected(false);
-				return ("Whatever");
+				return (">");
 			}
 
 			else if(cParse.startsWith("+CVCall:")) { // Only used for showing the dialed number when calling from
@@ -387,9 +387,15 @@ public class MainController extends Main implements Initializable {
 			else if(cParse.startsWith("BUSY")) {
 				SH1.writeString("ATH", true);
 				phoneState = State.busy;
-				return("Whatever");
+				return("BUSY");
 			}
-
+			
+			else if(cParse.startsWith("NO DIALTNE")) {
+				SH1.writeString("ATH", true);
+				phoneState = State.busy;
+				return("BUSY");
+			}
+			
 			else if(cParse.startsWith("ERROR")) {
 				setTextArea("Error");
 			}
