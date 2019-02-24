@@ -37,8 +37,8 @@ public class serialHandler {
 	 * This method is responsible for opening the chosen port.
 	 * <p>This method is called from the main controller where a port has been selected,
 	 * and is now opened by getting it's index and opening that port within the port array.
-	 * <p>After that, the data listener is added, and any new data coming in is sent to serialData to be added to the string.
-	 * <p>In this case, the byte array "Slice" is the actual bytes ready to be processed. 
+	 * <p>After that, the data listener is created, and any new data coming in is sent to serialData to be added to "Addition".
+	 * <p>In this case, the byte array "Slice" contains the bytes ready to be added to "Addition". 
 	 * @param 
 	 * @return true/false, according to the state of the port.
 	 */

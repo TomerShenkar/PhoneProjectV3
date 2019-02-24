@@ -41,6 +41,7 @@ public class AddConController extends CVController{
 		    stage.close();
 		}
 	}
+	
 	/**
 	 * If the cancel button has been pressed, the window closes without doing anything.
 	 * @param event

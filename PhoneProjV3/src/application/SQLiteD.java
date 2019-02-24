@@ -37,9 +37,7 @@ public class SQLiteD {
 	public String[] selectAll() {
 		String sql = "SELECT * FROM con";
 
-		try (Connection conn = this.connect();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql)) {
+		try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 			ArrayList<String> names = new ArrayList<String>();
 			while (rs.next()) {
 				names.add(rs.getString("Name") + ": " + rs.getString("Number") + " ");

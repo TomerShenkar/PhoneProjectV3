@@ -11,8 +11,10 @@ import javafx.stage.Stage;
 
 public class EditConController extends CVController{
 	
-	@FXML TextField nameField, numberField;
-	@FXML Button accept, cancel;
+	@FXML TextField nameField;
+	@FXML TextField numberField;
+	@FXML Button accept;
+	@FXML Button cancel;
 	
 	private SQLiteD sqld = new SQLiteD();
 	

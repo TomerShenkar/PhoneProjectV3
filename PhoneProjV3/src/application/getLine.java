@@ -16,9 +16,6 @@ public class getLine {
 	 * @return None
 	 */
 	public getLine() {
-		/*
-		 * Constructor for getLine
-		 */
 		linemode = true;
 		Save = "";
 		q = new LinkedList<>();

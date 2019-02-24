@@ -359,7 +359,7 @@ public class MainController extends Main implements Initializable {
 				GetLine.linemode = true;
 				String sms = textFieldSMS.getText();
 				SH1.writeString(sms, true);
-				byte[] endSMS = new byte[] { 26 };
+				byte[] endSMS = new byte[] {26};
 				SH1.writeByte(endSMS);
 				phoneState = State.typingMessage;
 				cb.setSelected(false);

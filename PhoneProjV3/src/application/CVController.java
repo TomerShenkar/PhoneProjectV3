@@ -24,7 +24,9 @@ public class CVController extends MainController{
 	static String selectedName;
 
 	@FXML TextField tf;
-	@FXML Button OpenConCreator, OpenConEditor, sendText;
+	@FXML Button OpenConCreator;
+	@FXML Button OpenConEditor;
+	@FXML Button sendText;
     @FXML ListView<String> lw = new ListView<String>();
 
     /**

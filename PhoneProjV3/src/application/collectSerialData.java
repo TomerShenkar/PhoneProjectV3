@@ -1,6 +1,6 @@
 package application;
 
-public class collectSerialData extends MainController implements serialListener{
+public class collectSerialData extends MainController implements serialListener {
 	/** 
 	 * This method takes the new data coming in from the COMM port.
 	 * In order for it to not lose any data, any character coming in

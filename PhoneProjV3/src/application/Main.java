@@ -14,7 +14,7 @@ public class Main extends Application {
 	serialHandler SH1 = new serialHandler();
 	
 	/**
-	 * This method starts up the primaryStage. It loads the fisrst window.
+	 * This method starts up the primaryStage. It loads the first window.
 	 */
 	public void start(Stage primaryStage) {
 		try {
