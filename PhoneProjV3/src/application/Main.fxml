@@ -47,7 +47,7 @@
             <Image url="@../Data/endcall.png" />
          </image>
       </ImageView>
-      <Button layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#clearTA" text="--&gt;" />
+      <Button fx:id="clearTA" layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#clearTA" text="--&gt;" />
       <Button fx:id="loadLast" layoutX="337.0" layoutY="50.0" mnemonicParsing="false" onAction="#loadLast" prefHeight="25.0" prefWidth="68.0" text="Load Last" />
    </children>
 </AnchorPane>

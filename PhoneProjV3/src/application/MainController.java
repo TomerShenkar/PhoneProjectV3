@@ -20,6 +20,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.animation.*;
 
 public class MainController extends Main implements Initializable {
 	// CLASS VERIABLES
@@ -53,6 +55,7 @@ public class MainController extends Main implements Initializable {
 	@ FXML Button answerButton; // Answer Button
 	@ FXML Button declineButton; // Decline Button
 	@ FXML Button loadLast; //Load last number dialed
+	@ FXML Button clearTA; //Clear textArea button
 	// STATE VERIABLES
 	protected static State phoneState = State.idle; // Defying the phone state
 	
@@ -75,6 +78,15 @@ public class MainController extends Main implements Initializable {
 			comboBox.getItems().add(names[i]);
 		}
 		cb.setSelected(false);
+		
+		clearTA.setOnAction(event -> {
+			PauseTransition pause = new PauseTransition(Duration.seconds(1));
+			pause.setOnFinished( event1 -> 
+			   clearTA()
+			);
+			pause.play();
+		});
+
 	}
 	
 	/**
@@ -276,9 +288,10 @@ public class MainController extends Main implements Initializable {
 	 * @param
 	 * @return None
 	 */
-	public void clearTA(ActionEvent evevt) {
+	public void clearTA() {
 		phoneNum = "";
-		textArea.setText("");
+		phoneState = State.idle;
+		setTextAreaState("Whatever");
 	}
 
 	/**
