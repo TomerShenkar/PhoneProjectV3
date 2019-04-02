@@ -40,7 +40,8 @@ public class MainController extends Main implements Initializable {
 
 	// NUMBER VERIABLES
 	String phoneNum = ""; // Outgoing number
-	String incomingNumber; // Incoming caller's number
+	String lastNum = ""; //Last number dialed
+	String incomingNum; // Incoming caller's number
 
 	// FXML VERIABLES
 	@ FXML public ComboBox<String> comboBox; // CommPort display comboBox
@@ -51,7 +52,7 @@ public class MainController extends Main implements Initializable {
 	@ FXML Button openPort; // OpenPort Button
 	@ FXML Button answerButton; // Answer Button
 	@ FXML Button declineButton; // Decline Button
-
+	@ FXML Button loadLast; //Load last number dialed
 	// STATE VERIABLES
 	protected static State phoneState = State.idle; // Defying the phone state
 	
@@ -93,6 +94,7 @@ public class MainController extends Main implements Initializable {
 	 * @return
 	 */
 	public void setNum(String s) {
+		
 		if(s != null) {
 			phoneNum = phoneNum + s;
 			setTextAreaNumber(phoneNum);
@@ -142,6 +144,7 @@ public class MainController extends Main implements Initializable {
 	/**
 	 * This method takes care of declining/ending a call.
 	 * <br>If the phone is ringing, during a call or dialing a number, end the call.
+	 * <br>This method also sets the last incoming/outgoing number. Depending on who initiated the call.
 	 * @param
 	 * @return None
 	 */
@@ -149,6 +152,13 @@ public class MainController extends Main implements Initializable {
 		if(phoneState == State.ringing || phoneState == State.duringCall || phoneState == State.dialing
 				|| phoneState == State.dialingFromContacts) {
 			SH1.writeString("ATH", true);
+	
+			if (!incomingNum.equals("")) {
+				lastNum = incomingNum;
+			}
+			else
+				lastNum = phoneNum;
+
 			phoneNum = "";
 			phoneState = State.idle;
 			isRing = false;
@@ -172,6 +182,20 @@ public class MainController extends Main implements Initializable {
 				phoneState = State.idle;
 			}
 		}
+	}
+	
+	/**
+	 * This method displays the last incoming/outgoing number.
+	 * @param
+	 * @return None 
+	 */
+	public void loadLast(ActionEvent event) {
+		if(!lastNum.equals("")) {
+			phoneNum = lastNum;
+			setTextArea(phoneNum);
+		}
+		else
+			setTextArea("No last incoming/outgoing number found");
 	}
 	
 	/**
@@ -209,10 +233,10 @@ public class MainController extends Main implements Initializable {
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum));
 		}
 		else if(phoneState == State.ringing) { // Incoming call
-			textArea.appendText("\n" + detectNum((incomingNumber)) + " is calling");
+			textArea.appendText("\n" + detectNum((incomingNum)) + " is calling");
 		}
 		else if(phoneState == State.duringCall) { // Incoming call
-			textArea.appendText("\n" + "In call with " + detectNum(incomingNumber));
+			textArea.appendText("\n" + "In call with " + detectNum(incomingNum));
 			phoneNum = "";
 		}
 		else if(phoneState == State.busy) { // Incoming call
@@ -222,7 +246,7 @@ public class MainController extends Main implements Initializable {
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim())); //Trim over the last digit required, thus in separated states.
 		}
 		else if(phoneState == State.incomingMessageNumber) { // Incoming text
-			textArea.appendText("\n" + "Message from " + detectNum(incomingNumber) + ": ");
+			textArea.appendText("\n" + "Message from " + detectNum(incomingNum) + ": ");
 		}
 		else if(phoneState == State.incomingMessage) {
 			textArea.appendText(incoming);
@@ -326,33 +350,34 @@ public class MainController extends Main implements Initializable {
 			else if(cParse.startsWith("+CLIP:")) {
 				if(isClip == false) {
 					String[] parts = cParse.split("\"");
-					incomingNumber = parts[1];
+					incomingNum = parts[1];
 					phoneState = State.ringing;
 					isClip = true;
-					return ("Call from " + detectNum(incomingNumber));
+					return ("Call from " + detectNum(incomingNum));
 				}
 			}
 
 			else if(cParse.startsWith("+COLP:")) {
 				// Only when this phone is calling - Doesn't work for declined call from client
 				String[] parts = cParse.split("\"");
-				incomingNumber = parts[1];
+				incomingNum = parts[1];
 				phoneState = State.duringCall;
-				return ("In call with " + detectNum(incomingNumber));
+				return ("In call with " + detectNum(incomingNum));
 			}
 
-			else if(cParse.startsWith("NO CARRIER")) { 
+			else if(cParse.startsWith("NO CARRIER")) { //This will also set the lastNum when a call is finished.
 				phoneState = State.idle;
+				lastNum = incomingNum;				
 				isRing = false;
 				isClip = false;
 				return ("NO CARRIER");
 			}
 
 			else if(cParse.startsWith("+CMT:")) { 
-				incomingNumber = processMSG(cParse);
+				incomingNum = processMSG(cParse);
 				nextIsMSG = true;
 				phoneState = State.incomingMessageNumber;
-				return (incomingNumber);
+				return (incomingNum);
 			}
 
 			else if(cParse.startsWith(">")) {
@@ -366,8 +391,7 @@ public class MainController extends Main implements Initializable {
 				return (">");
 			}
 
-			else if(cParse.startsWith("+CVCall:")) { // Only used for showing the dialed number when calling from
-													// ContactsView
+			else if(cParse.startsWith("+CVCall:")) { // Only used for showing the dialed number when calling from ContactsView
 				String[] numberParts = cParse.split(":");
 				phoneNum = numberParts[1];
 				phoneState = State.dialingFromContacts;
@@ -386,12 +410,14 @@ public class MainController extends Main implements Initializable {
 
 			else if(cParse.startsWith("BUSY")) {
 				SH1.writeString("ATH", true);
+				lastNum = incomingNum;				
 				phoneState = State.busy;
 				return("BUSY");
 			}
 			
 			else if(cParse.startsWith("NO DIALTNE")) {
 				SH1.writeString("ATH", true);
+				lastNum = incomingNum;				
 				phoneState = State.busy;
 				return("BUSY");
 			}
