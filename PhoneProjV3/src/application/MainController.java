@@ -79,12 +79,9 @@ public class MainController extends Main implements Initializable {
 		}
 		cb.setSelected(false);
 		
-		clearTA.setOnAction(event -> {
-			PauseTransition pause = new PauseTransition(Duration.seconds(1));
-			pause.setOnFinished( event1 -> 
-			   clearTA()
-			);
-			pause.play();
+		clearTA.setOnAction(event -> { //Reset whatever's on the main screen after one second
+			textArea.setText("End of call");
+			clearTA();
 		});
 
 	}
@@ -162,7 +159,7 @@ public class MainController extends Main implements Initializable {
 	 */
 	public void decline(ActionEvent event) { 
 		if(phoneState == State.ringing || phoneState == State.duringCall || phoneState == State.dialing
-				|| phoneState == State.dialingFromContacts) {
+				|| phoneState == State.dialingFromContacts || phoneState == State.typingNumber) {
 			SH1.writeString("ATH", true);
 	
 			if (!incomingNum.equals("")) {
@@ -171,10 +168,11 @@ public class MainController extends Main implements Initializable {
 			else
 				lastNum = phoneNum;
 
+			setTextArea("End of call");
 			phoneNum = "";
-			phoneState = State.idle;
 			isRing = false;
 			isClip = false;
+			clearTA();
 			setTextAreaState("Whatever");
 		}
 	}
@@ -236,7 +234,7 @@ public class MainController extends Main implements Initializable {
 	 */
 	public void setTextAreaState(String incoming) { 
 		if(phoneState == State.idle) {
-			textArea.setText("");
+			//textArea.setText("");
 		}
 		else if(phoneState == State.typingMessage) { // Outgoing text
 			textArea.appendText("\n" + "Sending " + textFieldSMS.getText() + " to " + detectNum(phoneNum));
@@ -289,6 +287,9 @@ public class MainController extends Main implements Initializable {
 	 * @return None
 	 */
 	public void clearTA() {
+		PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+		pause.setOnFinished(event -> textArea.setText(""));
+		pause.play();
 		phoneNum = "";
 		phoneState = State.idle;
 		setTextAreaState("Whatever");
