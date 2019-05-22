@@ -56,6 +56,7 @@ public class MainController extends Main implements Initializable {
 	@ FXML Button declineButton; // Decline Button
 	@ FXML Button loadLast; //Load last number dialed
 	@ FXML Button clearTA; //Clear textArea button
+	@ FXML Button openContacts; //OpenContacts Button
 	// STATE VERIABLES
 	protected static State phoneState = State.idle; // Defying the phone state
 	
@@ -79,8 +80,19 @@ public class MainController extends Main implements Initializable {
 		}
 		cb.setSelected(false);
 		
+		//Disabling the contacts and answer button beofre opening the port prevents performing actions when the port hasn't been opened. 
+		openContacts.setDisable(true); 
+		answerButton.setDisable(true);
+		
 		clearTA.setOnAction(event -> { //Reset whatever's on the main screen after one second
 			textArea.setText("End of call");
+			
+			if(phoneState == State.duringCall) {
+				textArea.setText("End of call");
+			}
+			else
+				textArea.setText("Ok");
+			
 			clearTA();
 		});
 
@@ -201,6 +213,7 @@ public class MainController extends Main implements Initializable {
 	 */
 	public void loadLast(ActionEvent event) {
 		if(!lastNum.equals("")) {
+			phoneState = State.typingNumber;
 			phoneNum = lastNum;
 			setTextArea(phoneNum);
 		}
@@ -234,7 +247,7 @@ public class MainController extends Main implements Initializable {
 	 */
 	public void setTextAreaState(String incoming) { 
 		if(phoneState == State.idle) {
-			//textArea.setText("");
+			clearTA();
 		}
 		else if(phoneState == State.typingMessage) { // Outgoing text
 			textArea.appendText("\n" + "Sending " + textFieldSMS.getText() + " to " + detectNum(phoneNum));
@@ -291,8 +304,8 @@ public class MainController extends Main implements Initializable {
 		pause.setOnFinished(event -> textArea.setText(""));
 		pause.play();
 		phoneNum = "";
-		phoneState = State.idle;
-		setTextAreaState("Whatever");
+		//phoneState = State.idle;
+		//setTextAreaState("Whatever");
 	}
 
 	/**
@@ -472,13 +485,13 @@ public class MainController extends Main implements Initializable {
 					int x = 10;
 					while (x < 1000) {
 						Thread.sleep(100);
-						if(!Addition.isEmpty()) {
+						if(!Addition.isEmpty()) { // When data comes in from collectSerialData, it gets added to GetLine
 							GetLine.addRaw(Addition.remove());
 						}
-						while (!GetLine.getQ().isEmpty()) { // Emptying the queue.
+						while (!GetLine.getQ().isEmpty()) { // Emptying the queue from get line - full commands.
 							String temp = GetLine.getNext();
-							System.out.println(temp);
-							publish(Sim900Parse(temp)); // Complete line should be here
+							System.out.println(temp); // Check
+							publish(Sim900Parse(temp)); 
 						}
 					}
 					return true;
@@ -503,8 +516,10 @@ public class MainController extends Main implements Initializable {
 				}
 			};
 			worker.execute();
-			boolean disable = true; // Setting OpenPort button to be disabled from the command did not work.
-			openPort.setDisable(disable);
+			openPort.setDisable(true); //When the port has been opened, allow the user to press on contacts and answer button
+			openContacts.setDisable(false);
+			answerButton.setDisable(false);
+			textArea.appendText("Port opened succesfully");
 		}
 	}
 }

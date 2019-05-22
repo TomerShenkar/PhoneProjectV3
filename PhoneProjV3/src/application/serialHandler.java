@@ -43,21 +43,21 @@ public class serialHandler {
 	 * @return true/false, according to the state of the port.
 	 */
 	public boolean portOpener(int index) {
-		if(index<= serialPorts.length + 1 && index > -1) {
+		if(index <= serialPorts.length + 1 && index > -1) {
 			chosenPort = serialPorts[index];
-			if(chosenPort.openPort()) {
-				isOpen = true;
-				chosenPort.addDataListener(new SerialPortDataListener() {
-					   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
+			if(chosenPort.openPort()) { 
+				isOpen = true; //Port is opened
+				chosenPort.addDataListener(new SerialPortDataListener() { //Adds the data listener for incoming data - defined by JSerialComm
+					   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; } 
 					   public void serialEvent(SerialPortEvent event) {
-					   if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+					   if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) //If there isn't any data - ignore
 					         return;
 					      if (chosenPort.bytesAvailable() > 0) {
-						      byte[] newData = new byte[chosenPort.bytesAvailable()];
-						      int numRead = chosenPort.readBytes(newData, newData.length);
+						      byte[] newData = new byte[chosenPort.bytesAvailable()]; //If one or more bytes are available save it
+						      int numRead = chosenPort.readBytes(newData, newData.length); //To check how many bytes I actually received  
 						      if (numRead > 0) {
 						    	  byte[] slice = Arrays.copyOfRange(newData, 0, numRead);
-						    	  sl.serialData(slice);
+						    	  sl.serialData(slice); //Take data from hardware buffers - save to my queue "Addition" (see collectSerialData, serialListener)
 						      }			    	  
 					      }
 					   }

@@ -60,7 +60,7 @@ public class getLine {
 	}
 	
 	/**
-	 * This method is used to return the Queue 
+	 * This method is used to return the Queue - Used in MainController (OpenPort method) to extract complete lines from the Queue and process it
 	 * @param None
 	 * @return q
 	 */
