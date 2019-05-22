@@ -21,8 +21,8 @@ public class Main extends Application {
 			Parent root = FXMLLoader.load(getClass().getResource("/application/Main.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setTitle("SIM900");
 			primaryStage.setScene(scene);
-			primaryStage.setTitle("SIM900 Modem Phone");
 			primaryStage.setOnHiding(new EventHandler<WindowEvent>() {
 				@Override
 				public void handle(WindowEvent arg0) {
