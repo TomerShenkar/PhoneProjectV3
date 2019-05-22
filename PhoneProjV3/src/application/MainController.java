@@ -16,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -59,7 +58,6 @@ public class MainController extends Main implements Initializable {
 	@ FXML Button loadLast; //Load last number dialed
 	@ FXML Button clearTA; //Clear textArea button
 	@ FXML Button openContacts; //OpenContacts Button
-	@ FXML Label provLabel; //Netword providor label
 	// STATE VERIABLES
 	protected static State phoneState = State.idle; // Defying the phone state
 	
@@ -82,7 +80,6 @@ public class MainController extends Main implements Initializable {
 			comboBox.getItems().add(names[i]);
 		}
 		cb.setSelected(false);
-		provLabel.setText("No Network");
 		//Disabling the contacts and answer button beofre opening the port prevents performing actions when the port hasn't been opened. 
 		openContacts.setDisable(true); 
 		answerButton.setDisable(true);
@@ -461,14 +458,6 @@ public class MainController extends Main implements Initializable {
 				phoneNum = "";
 				setTextArea("Message received");
 			}
-			
-			else if(cParse.startsWith("+CSPN:")) {
-				String[] provParts = cParse.split(": ");
-				String[] provParts2 = provParts[1].split("\"");
-				String provider = provParts2[1];
-				textArea.appendText(provider);
-				//provLabel.setText(provider);
-			}
 
 			else {
 				// None of the above
@@ -490,7 +479,6 @@ public class MainController extends Main implements Initializable {
 	public void openPort(ActionEvent event) { // This method opens the port and sets the listener for incoming commands
 		if(SH1.portOpener(activePort)) {
 			SH1.setListener(sl);
-			SH1.writeString("AT+CSPN?", true);
 			SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
 				@ Override
 				protected Boolean doInBackground() throws Exception {
