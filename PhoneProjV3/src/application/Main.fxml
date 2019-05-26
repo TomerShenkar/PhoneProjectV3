@@ -48,6 +48,5 @@
          </image>
       </ImageView>
       <Button fx:id="clearTA" layoutX="14.0" layoutY="57.0" mnemonicParsing="false" onAction="#clearTA" text="--&gt;" />
-      <Button fx:id="loadLast" layoutX="337.0" layoutY="56.0" mnemonicParsing="false" onAction="#loadLast" prefHeight="25.0" prefWidth="68.0" text="Load Last" />
    </children>
 </AnchorPane>

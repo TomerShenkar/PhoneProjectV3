@@ -43,7 +43,6 @@ public class MainController extends Main implements Initializable {
 
 	// NUMBER VERIABLES
 	String phoneNum = ""; // Outgoing number
-	String lastNum = ""; //Last number dialed
 	String incomingNum; // Incoming caller's number
 
 	// FXML VERIABLES
@@ -55,7 +54,6 @@ public class MainController extends Main implements Initializable {
 	@ FXML Button openPort; // OpenPort Button
 	@ FXML Button answerButton; // Answer Button
 	@ FXML Button declineButton; // Decline Button
-	@ FXML Button loadLast; //Load last number dialed
 	@ FXML Button clearTA; //Clear textArea button
 	@ FXML Button openContacts; //OpenContacts Button
 	// STATE VERIABLES
@@ -63,7 +61,7 @@ public class MainController extends Main implements Initializable {
 	
 	protected static enum State { // Different phone states
 		idle, typingNumber, typingMessage, dialing, ringing, duringCall, dialingFromContacts, incomingMessage,
-		incomingMessageNumber, busy;
+		incomingMessageNumber, busy, endOfCall;
 	}
 
 	@ Override
@@ -130,7 +128,7 @@ public class MainController extends Main implements Initializable {
 	 * @param None
 	 * @return None
 	 */
-	public void placeText() {
+	public void sendSMS() {
 		String sms = textFieldSMS.getText();
 		if(!sms.equals("") || phoneNum != null || !phoneNum.equals("")) {
 			GetLine.linemode = false;
@@ -146,9 +144,10 @@ public class MainController extends Main implements Initializable {
 	 * @param 
 	 * @return None
 	 */
+	
 	public void answer(ActionEvent event) { 
 		if(cb.isSelected()) { 
-			placeText();
+			sendSMS();
 		}
 		else if(phoneState == State.typingNumber) {
 			SH1.writeString("ATD" + phoneNum + ";", true);
@@ -160,6 +159,10 @@ public class MainController extends Main implements Initializable {
 			phoneState = State.duringCall;
 			setTextAreaState("Whatever");
 		}
+		
+		else {
+			//None of the above
+		}
 	}
 	
 	/**
@@ -169,23 +172,22 @@ public class MainController extends Main implements Initializable {
 	 * @param
 	 * @return None
 	 */
+	
 	public void decline(ActionEvent event) { 
 		if(phoneState == State.ringing || phoneState == State.duringCall || phoneState == State.dialing
 				|| phoneState == State.dialingFromContacts || phoneState == State.typingNumber) {
 			SH1.writeString("ATH", true);
 	
-			if (!incomingNum.equals("")) {
-				lastNum = incomingNum;
-			}
-			else
-				lastNum = phoneNum;
-
 			setTextArea("End of call");
 			phoneNum = "";
 			isRing = false;
 			isClip = false;
 			clearTA();
 			setTextAreaState("Whatever");
+		}
+		
+		else {
+			//None of the above
 		}
 	}
 	
@@ -206,27 +208,14 @@ public class MainController extends Main implements Initializable {
 		}
 	}
 	
-	/**
-	 * This method displays the last incoming/outgoing number.
-	 * @param
-	 * @return None 
-	 */
-	public void loadLast(ActionEvent event) {
-		if(!lastNum.equals("")) {
-			phoneState = State.typingNumber;
-			phoneNum = lastNum;
-			setTextArea(phoneNum);
-		}
-		else
-			setTextArea("No last incoming/outgoing number found");
-	}
-	
+
 	/**
 	 * This method displays the number being typed
 	 * @param
 	 * @return None
 	 */
 	public void setTextAreaNumber(String s) { 
+		phoneState = State.typingNumber;
 		textArea.setText(s);
 	}
 	
@@ -266,13 +255,17 @@ public class MainController extends Main implements Initializable {
 			textArea.appendText("\n" + detectNum(phoneNum) + " is Busy");
 		}
 		else if(phoneState == State.dialingFromContacts) { // Outgoing call
-			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim())); //Trim over the last digit required, thus in separated states.
+			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim())); //Trim over the last digit required in orfer to have seperated states 
 		}
 		else if(phoneState == State.incomingMessageNumber) { // Incoming text
 			textArea.appendText("\n" + "Message from " + detectNum(incomingNum) + ": ");
 		}
 		else if(phoneState == State.incomingMessage) {
 			textArea.appendText(incoming);
+		}
+		else if(phoneState == State.endOfCall) {
+			textArea.appendText("\n" + "End of call");
+			clearTA();
 		}
 	}
 	
@@ -393,8 +386,7 @@ public class MainController extends Main implements Initializable {
 			}
 
 			else if(cParse.startsWith("NO CARRIER")) { //This will also set the lastNum when a call is finished.
-				phoneState = State.idle;
-				lastNum = incomingNum;				
+				phoneState = State.endOfCall;
 				isRing = false;
 				isClip = false;
 				return ("NO CARRIER");
@@ -437,14 +429,12 @@ public class MainController extends Main implements Initializable {
 
 			else if(cParse.startsWith("BUSY")) {
 				SH1.writeString("ATH", true);
-				lastNum = incomingNum;				
 				phoneState = State.busy;
 				return("BUSY");
 			}
 			
-			else if(cParse.startsWith("NO DIALTNE")) {
+			else if(cParse.startsWith("NO DIALTONE")) {
 				SH1.writeString("ATH", true);
-				lastNum = incomingNum;				
 				phoneState = State.busy;
 				return("BUSY");
 			}
