@@ -41,6 +41,8 @@ public class getLine {
 	 * @param raw
 	 * @return None
 	 */
+	
+	
 	public void addRaw(byte[] raw) {
 		for(int i = 0; i<raw.length; i++) {
 			if(linemode == true) {

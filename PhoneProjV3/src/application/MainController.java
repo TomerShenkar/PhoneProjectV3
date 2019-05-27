@@ -315,7 +315,9 @@ public class MainController extends Main implements Initializable {
 		return Number;
 	}
 	/**
-	 * This method opens the CV.FXML
+	 * This method opens the CV.FXML. It works by loading the fxml file from a folder,
+	 * then loading it on the screen using the applicaions.css stylesheet. The fxml layout 
+	 * is set onto a stage that is opened. 
 	 * @param
 	 * @return None
 	 */

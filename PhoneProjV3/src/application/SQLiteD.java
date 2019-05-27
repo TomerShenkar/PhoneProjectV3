@@ -64,6 +64,7 @@ public class SQLiteD {
 	 * @param
 	 * @return A specific searched result
 	 */
+	
 	public String searchName(String searchParam) {
 		String sql = "SELECT * FROM con Where Number = " + "'" + searchParam + "'";
 

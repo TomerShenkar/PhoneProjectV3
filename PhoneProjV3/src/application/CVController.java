@@ -118,7 +118,9 @@ public class CVController extends MainController{
 	
 	
 	/**
-	 * This method opens the AddCon FXML.
+	 * This method opens the AddCon FXML. It works by loading the fxml file from a folder,
+	 * then loading it on the screen using the applicaions.css stylesheet. The fxml layout 
+	 * is set onto a stage that is opened. 
 	 * @param event
 	 * @return none
 	 */
@@ -139,7 +141,9 @@ public class CVController extends MainController{
 	}
 
 	/**
-	 * This method opens the EditCon FXML.
+	 * This method opens the EditCon FXML. It works by loading the fxml file from a folder,
+	 * then loading it on the screen using the applicaions.css stylesheet. The fxml layout 
+	 * is set onto a stage that is opened. 
 	 * @param event
 	 * @return none
 	 */
