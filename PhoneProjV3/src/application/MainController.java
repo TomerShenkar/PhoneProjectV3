@@ -252,7 +252,7 @@ public class MainController extends Main implements Initializable {
 			phoneNum = "";
 		}
 		else if(phoneState == State.busy) { // Incoming call
-			textArea.appendText("\n" + detectNum(phoneNum) + " is Busy");
+			textArea.appendText("\n" + "Couldn't reach " + detectNum(phoneNum));
 		}
 		else if(phoneState == State.dialingFromContacts) { // Outgoing call
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim())); //Trim over the last digit required in orfer to have seperated states 
@@ -270,7 +270,7 @@ public class MainController extends Main implements Initializable {
 	}
 	
 	/**
-	 * This method displays any other messages needing displaying that aren't state related. (e.g. "Message received", "Error" etc).
+	 * This method displays any other messages needing displaying that aren't state related. (e.g. "Message sent!", "Error" etc).
 	 * @param
 	 * @return None
 	 */
@@ -354,7 +354,7 @@ public class MainController extends Main implements Initializable {
 	 * @return Wanted result. Rarely used later on, because the display occurs through the state, that's set in each case. 
 	 * @see <a href="SIM900_AT.pdf">https://www.espruino.com/datasheets/SIM900_AT.pdf</a>
 	 */
-	private String Sim900Parse(String cParse) {
+	private String Sim900Parser(String cParse) {
 		if(cParse != null) { 
 			if(nextIsMSG) {
 				nextIsMSG = false;
@@ -429,7 +429,7 @@ public class MainController extends Main implements Initializable {
 				setTextArea(phoneNum);
 			}
 
-			else if(cParse.startsWith("BUSY")) {
+			else if(cParse.startsWith("BUSY") || cParse.startsWith("NO ANSWER")) { // Will display "connect readch ..." if one of two responses show
 				SH1.writeString("ATH", true);
 				phoneState = State.busy;
 				return("BUSY");
@@ -448,7 +448,7 @@ public class MainController extends Main implements Initializable {
 			else if(cParse.startsWith("+CMGS")) {
 				textFieldSMS.clear();
 				phoneNum = "";
-				setTextArea("Message received");
+				setTextArea("Message sent!");
 			}
 
 			else {
@@ -462,7 +462,7 @@ public class MainController extends Main implements Initializable {
 	 * This method is the means to update a GI from another thread. In this case, it is data coming in from the COMM port. 
 	 * <p>First, the chosen port is opened, and it's listener is set.
 	 * <p>GetLine starts accumulating the data and sending the output to "publish". 
-	 * <br>"publish" then parses the data through the "Sim900Parse" method above and inserts the parsed data into a list called "chunks".
+	 * <br>"publish" then parses the data through the "Sim900Parser" method above and inserts the parsed data into a list called "chunks".
 	 * All of that is done in the "doInBackground" part. 
 	 * <p>"Chunks" is removed in "process" and the GUI is updated from there.
 	 * @param
@@ -483,7 +483,7 @@ public class MainController extends Main implements Initializable {
 						while (!GetLine.getQ().isEmpty()) { // Emptying the queue from get line - full commands.
 							String temp = GetLine.getNext();
 							System.out.println(temp); // Check
-							publish(Sim900Parse(temp)); 
+							publish(Sim900Parser(temp)); 
 						}
 					}
 					return true;
@@ -512,6 +512,7 @@ public class MainController extends Main implements Initializable {
 			openContacts.setDisable(false);
 			answerButton.setDisable(false);
 			textArea.appendText("Port opened succesfully");
+			clearTA();
 		}
 	}
 }
