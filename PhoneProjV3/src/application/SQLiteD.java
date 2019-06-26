@@ -81,7 +81,26 @@ public class SQLiteD {
 
 		return searchParam;
 	}
+	
+	public String[] returnSpecific(String searchParam) {
+		String sql = "SELECT * FROM con WHERE Name LIKE " + "'" + searchParam + "'";
 
+		try (Connection conn = this.connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+			ArrayList<String> names = new ArrayList<String>();
+			while (rs.next()) {
+				names.add(rs.getString("Name") + ": " + rs.getString("Number") + " ");
+			}
+
+			String[] resArray = new String[names.size()];
+			resArray = names.toArray(resArray);
+			return resArray;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * This method inserts new values into the database.
 	 * <p>

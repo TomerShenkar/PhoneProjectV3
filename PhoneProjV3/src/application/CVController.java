@@ -27,6 +27,7 @@ public class CVController extends MainController{
 	@FXML Button OpenConCreator;
 	@FXML Button OpenConEditor;
 	@FXML Button sendText;
+	@FXML Button search;
     @FXML ListView<String> lw = new ListView<String>();
 
     /**
@@ -89,6 +90,35 @@ public class CVController extends MainController{
 	}
 	
 	/**
+	 * This method reloads the contacts list based on a spacific contact searched.
+	 * @param t
+	 * @return None
+	 */
+	public void loadSpecific(String t) {
+		arr = sqld.returnSpecific(t);
+		lw.getItems().clear();
+		if(arr != null || arr.length > 0) {
+			lw.setItems(FXCollections.observableArrayList(Arrays.asList(arr)));
+		}
+		else {
+			lw.setItems(FXCollections.observableArrayList(Arrays.asList(sqld.selectAll())));			
+		}
+		tf.setText("");
+	}
+	
+	/**
+	 * This method takes the search paramater from the textField and updates the contacts list based on that name. 
+	 * @param event
+	 * @return None
+	 */
+	public void search(ActionEvent event) {
+		String search = tf.getText();
+		if(search != null && !search.equals("")) {
+			loadSpecific(search);
+		}
+	}
+	
+	/**
 	 * This method deleted the selected contact, then refreshes the liswView.
 	 * @param event
 	 * @return None
@@ -108,7 +138,7 @@ public class CVController extends MainController{
 	 * @param event
 	 * @return None
 	 */
-	public void sendText(ActionEvent event) {
+	public void placeText(ActionEvent event) {
 		if(number != null) {
 			String send = "+CVText:" + number + "\n";
 			sl.serialData(send.getBytes());

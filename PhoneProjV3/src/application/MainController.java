@@ -293,7 +293,7 @@ public class MainController extends Main implements Initializable {
 	 * @return None
 	 */
 	public void clearTA() {
-		PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+		PauseTransition pause = new PauseTransition(Duration.seconds(2));
 		pause.setOnFinished(event -> textArea.setText(""));
 		pause.play();
 		phoneNum = "";
@@ -449,6 +449,7 @@ public class MainController extends Main implements Initializable {
 				textFieldSMS.clear();
 				phoneNum = "";
 				setTextArea("Message sent!");
+				clearTA();
 			}
 
 			else {

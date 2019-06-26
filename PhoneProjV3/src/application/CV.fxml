@@ -11,7 +11,7 @@
    <children>
       <TextField fx:id="tf" layoutX="325.0" layoutY="75.0" />
       <Button layoutX="325.0" layoutY="141.0" mnemonicParsing="false" onAction="#placeCall" text="Call" />
-      <Button fx:id="sendText" layoutX="367.0" layoutY="141.0" mnemonicParsing="false" onAction="#sendText" text="Text" />
+      <Button fx:id="sendText" layoutX="367.0" layoutY="141.0" mnemonicParsing="false" onAction="#placeText" text="Text" />
       <Button fx:id="OpenConEditor" layoutX="412.0" layoutY="141.0" mnemonicParsing="false" onAction="#openConEditer" text="Edit" />
       <Button layoutX="458.0" layoutY="141.0" mnemonicParsing="false" onAction="#deleteCon" text="Delete" />
       <Button fx:id="OpenConCreator" layoutX="483.0" layoutY="75.0" mnemonicParsing="false" onAction="#openConAdder" text="New" />
@@ -22,5 +22,6 @@
       </Label>
       <Button layoutX="46.0" layoutY="75.0" mnemonicParsing="false" onAction="#reloadListView" text="R" />
       <ListView fx:id="lw" layoutX="84.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" />
+      <Button fx:id="search" layoutX="367.0" layoutY="109.0" mnemonicParsing="false" onAction="#search" text="Search " />
    </children>
 </AnchorPane>
