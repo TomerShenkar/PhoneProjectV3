@@ -25,7 +25,7 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setOnHiding(new EventHandler<WindowEvent>() {
 				@Override
-				public void handle(WindowEvent arg0) {
+				public void handle(WindowEvent arg0) {	
 					SH1.portCloser(); 
 					Platform.exit();
 				}

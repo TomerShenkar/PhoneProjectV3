@@ -248,23 +248,23 @@ public class MainController extends Main implements Initializable {
 			textArea.appendText("\n" + detectNum((incomingNum)) + " is calling");
 		}
 		else if(phoneState == State.duringCall) { // Incoming call
-			textArea.appendText("\n" + "In call with " + detectNum(incomingNum));
+			textArea.appendText("\n" + "On a call with " + detectNum(incomingNum));
 			phoneNum = "";
 		}
 		else if(phoneState == State.busy) { // Incoming call
-			textArea.appendText("\n" + "Couldn't reach " + detectNum(phoneNum));
+			textArea.appendText("\n" + detectNum(phoneNum) + " is busy");
 		}
 		else if(phoneState == State.dialingFromContacts) { // Outgoing call
 			textArea.appendText("\n" + "Calling " + detectNum(phoneNum.trim())); //Trim over the last digit required in orfer to have seperated states 
 		}
 		else if(phoneState == State.incomingMessageNumber) { // Incoming text
-			textArea.appendText("\n" + "Message from " + detectNum(incomingNum) + ": ");
+			textArea.appendText("\n" + "New message from " + detectNum(incomingNum) + ": ");
 		}
 		else if(phoneState == State.incomingMessage) {
 			textArea.appendText(incoming);
 		}
 		else if(phoneState == State.endOfCall) {
-			textArea.appendText("\n" + "End of call");
+			textArea.appendText("\n" + "Call ended");
 			clearTA();
 		}
 	}
@@ -275,7 +275,7 @@ public class MainController extends Main implements Initializable {
 	 * @return None
 	 */
 	public void setTextArea(String display) { 
-		textArea.appendText("\n" + display);
+		textArea.appendText(display + "\n");
 	}
 	
 	/**
@@ -426,7 +426,7 @@ public class MainController extends Main implements Initializable {
 				String[] numberParts = tempParts[1].split("\n");
 				phoneNum = numberParts[0].trim();
 				cb.setSelected(true);
-				setTextArea(phoneNum);
+				setTextArea("Text: " + phoneNum);
 			}
 
 			else if(cParse.startsWith("BUSY") || cParse.startsWith("NO ANSWER")) { // Will display "connect readch ..." if one of two responses show
